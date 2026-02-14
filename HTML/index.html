@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Alabanzas - Iglesia</title>
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Scripts de la Aplicación (Orden Importante) -->
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Scripts de Google (Cargan al final y llaman a funciones definidas en auth.js) -->
+    <script src="https://accounts.google.com/gsi/client" async defer onload="gisLoaded()"></script>
+    <script src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+</head>
+<body>
+    <!-- PANTALLA SELECCIÓN DE ROL (primera vez) -->
+    <div id="roleSelectionOverlay" class="role-selection-overlay">
+        <div class="role-selection-card">
+            <div style="font-size: 3em; margin-bottom: 15px;">🎵</div>
+            <h2 style="color: #60a5fa; margin-bottom: 10px;">¡Bienvenido al equipo!</h2>
+            <p style="color: #94a3b8; margin-bottom: 10px;">Es tu primera vez aquí. ¿Cuál es tu nombre?</p>
+            <input type="text" id="newUserName" placeholder="Tu nombre (ej: Juan Pérez)" 
+                   style="width: 100%; margin-bottom: 20px; text-align: center; font-size: 1.1em;">
+            <p style="color: #94a3b8; margin-bottom: 15px;">¿Cuál es tu rol en el equipo de alabanza?</p>
+
+            <div class="role-option" onclick="selectRole('lider')" id="roleOptLider">
+                <div class="role-option-title">👑 Líder de Alabanza</div>
+                <div class="role-option-desc">Administra el repertorio, ensayos, servicios y músicos. Acceso completo.</div>
+            </div>
+            <div class="role-option" onclick="selectRole('musico')" id="roleOptMusico">
+                <div class="role-option-title">🎸 Músico</div>
+                <div class="role-option-desc">Ve el repertorio, sugiere canciones y confirma asistencia a ensayos.</div>
+            </div>
+            <div class="role-option" onclick="selectRole('invitado')" id="roleOptInvitado">
+                <div class="role-option-title">🌱 Invitado</div>
+                <div class="role-option-desc">Solo lectura. Ve el repertorio, próximos ensayos y setlist del domingo. No puede sugerir ni editar nada.</div>
+            </div>
+
+            <div id="roleWarning" style="display:none; background: #7c2d12; border-radius: 8px; padding: 12px; margin: 15px 0; color: #fed7aa; font-size: 0.9em;">
+                ⚠️ Ya existe un Líder en el equipo. Solo puede haber uno. Por favor selecciona Músico.
+            </div>
+
+            <button id="confirmRoleBtn" onclick="confirmRole()" style="width: 100%; margin-top: 15px; padding: 15px; font-size: 1.1em;" disabled>
+                ✅ Unirme al equipo
+            </button>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2 id="loadingText">Iniciando sesión con Google...</h2>
+            <p style="color: #94a3b8; margin-top: 10px;">Por favor autoriza el acceso</p>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <header>
+            <div class="user-info" id="userInfo">
+                <div class="user-avatar" id="userAvatar">?</div>
+                <div>
+                    <div class="user-name" id="userDisplayName">Cargando...</div>
+                    <div id="userRoleBadge"></div>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="header-title-row">
+                    <div id="churchLogoWrapper" style="display:none;">
+                        <img id="churchLogo" src="" alt="Logo Iglesia" class="church-logo-img">
+                    </div>
+                    <div>
+                        <h1>🎵 Gestor de Alabanzas</h1>
+                        <p class="subtitle">Sistema musical de Iglesia CCINT Buin - SINCRONIZADO</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="syncIndicator" class="sync-indicator offline">
+                <span class="sync-dot"></span>
+                <span id="syncText">No conectado</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('repertorio')">📚 Repertorio</button>
+            <button class="tab-button" id="tabDomingo" onclick="showTab('domingo')">🎤 Domingo Actual</button>
+            <button class="tab-button" id="tabEnsayosAdmin" onclick="showTab('ensayos')">📝 Ensayos</button>
+            <button class="tab-button" onclick="showTab('pendientes')">⏳ Pendientes</button>
+            <button class="tab-button" onclick="showTab('historial')">📅 Historial</button>
+            <button class="tab-button lider-only" id="tabConfig" onclick="showTab('configuracion')">⚙️ Configuración</button>
+        </div>
+
+        <!-- TAB: REPERTORIO -->
+        <div id="repertorio" class="tab-content active">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSongs">0</div>
+                    <div class="stat-label">Alabanzas en repertorio</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSundays">0</div>
+                    <div class="stat-label">Domingos registrados</div>
+                </div>
+            </div>
+
+            <div class="card lider-only">
+                <h2>➕ Agregar Nueva Alabanza</h2>
+                <div class="input-group">
+                    <input type="text" id="songName" placeholder="Nombre de la alabanza">
+                    <select id="songDifficulty">
+                        <option value="">Nivel de dificultad</option>
+                        <option value="Fácil">Fácil</option>
+                        <option value="Media">Media</option>
+                        <option value="Difícil">Difícil</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="songYouTube" placeholder="Link de YouTube (opcional)">
+                    <input type="text" id="songPDF" placeholder="Link del PDF con acordes (Google Drive, Dropbox, etc.)">
+                </div>
+                <button onclick="addSong()">Agregar</button>
+            </div>
+
+            <div class="card">
+                <h2>🎸 Todas las Alabanzas</h2>
+                <div id="songsList" class="song-list"></div>
+            </div>
+        </div>
+
+        <!-- TAB: DOMINGO ACTUAL -->
+        <div id="domingo" class="tab-content">
+            <div class="card">
+                <h2>📅 Seleccionar Fecha del Domingo</h2>
+                <div class="input-group">
+                    <div class="date-picker-wrapper">
+                        <span class="date-icon">📅</span>
+                        <input type="date" id="sundayDate">
+                    </div>
+                    <button onclick="setSundayDate()">Establecer Fecha</button>
+                </div>
+                <p id="currentSundayDisplay" style="margin-top: 15px; color: #60a5fa; font-size: 1.1em;"></p>
+            </div>
+
+            <div id="repetitionWarning"></div>
+
+            <div class="card">
+                <h2>🎵 Seleccionar Alabanzas para este Domingo</h2>
+                <p style="margin-bottom: 15px; color: #94a3b8;">Selecciona 4-5 alabanzas para el servicio</p>
+                <div class="input-group">
+                    <select id="songSelector">
+                        <option value="">Selecciona una alabanza...</option>
+                    </select>
+                    <button onclick="addToSunday()">Agregar al Domingo</button>
+                </div>
+
+                <div id="sundayList" class="sunday-selector"></div>
+
+                <button onclick="saveSunday()" style="margin-top: 20px; width: 100%;" class="btn-success">
+                    💾 Guardar Domingo Completo
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB: ENSAYOS -->
+        <div id="ensayos" class="tab-content">
+            <div class="card">
+                <h2>📝 Planificar Ensayo</h2>
+                <div class="input-group">
+                    <div class="date-picker-wrapper">
+                        <span class="date-icon">📅</span>
+                        <input type="date" id="rehearsalDate">
+                    </div>
+                    <div class="date-picker-wrapper">
+                        <span class="date-icon">⏰</span>
+                        <input type="time" id="rehearsalTime" value="19:00">
+                    </div>
+                    <button onclick="setRehearsalDate()">Establecer Fecha y Hora</button>
+                </div>
+                <p id="currentRehearsalDisplay" style="margin-top: 15px; color: #60a5fa; font-size: 1.1em;"></p>
+            </div>
+
+            <div class="card">
+                <h2>🎵 Alabanzas para Practicar</h2>
+                <p style="margin-bottom: 15px; color: #94a3b8;">Selecciona las alabanzas que practicarán en este ensayo</p>
+                <div class="input-group">
+                    <select id="rehearsalSongSelector">
+                        <option value="">Selecciona una alabanza...</option>
+                    </select>
+                    <button onclick="addToRehearsal()">Agregar al Ensayo</button>
+                </div>
+
+                <div id="rehearsalList" class="sunday-selector"></div>
+
+                <div class="input-group" style="margin-top: 20px;">
+                    <textarea id="rehearsalNotes" placeholder="Notas del ensayo (ej: enfocarse en el puente, practicar cambios de tempo, etc.)" 
+                              style="width: 100%; min-height: 80px; padding: 12px; background: #0f172a; border: 2px solid #334155; 
+                                     border-radius: 8px; color: #e2e8f0; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <button onclick="saveRehearsal()" style="margin-top: 20px; width: 100%;" class="btn-success">
+                    💾 Guardar Ensayo
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>📋 Próximos Ensayos y Historial</h2>
+                <div id="rehearsalHistoryList"></div>
+            </div>
+        </div>
+
+        <!-- TAB: PENDIENTES -->
+        <div id="pendientes" class="tab-content">
+
+            <div id="invitadoPendientesMsg" style="display:none;" class="card" style="text-align:center;">
+                <div style="font-size:2em; margin-bottom:10px;">🌱</div>
+                <p style="color:#94a3b8;">Como <strong>Invitado</strong> puedes ver las alabanzas sugeridas, pero no puedes agregar sugerencias. Habla con el Líder para cambiar tu rol a Músico.</p>
+            </div>
+
+            <div class="card musico-only">
+                <h2>⏳ Sugerir Nueva Alabanza para Aprender</h2>
+                <div class="input-group">
+                    <input type="text" id="pendingSongName" placeholder="Nombre de la alabanza">
+                    <input type="text" id="suggestedBy" placeholder="Tu nombre (opcional)">
+                    <select id="pendingPriority">
+                        <option value="">Prioridad</option>
+                        <option value="Alta">Alta - La necesitamos pronto</option>
+                        <option value="Media">Media - Cuando podamos</option>
+                        <option value="Baja">Baja - Sin apuro</option>
+                    </select>
+                    <button onclick="addPendingSong()">📝 Sugerir</button>
+                </div>
+                <div class="input-group">
+                    <textarea id="pendingNotes" placeholder="Notas adicionales (¿Por qué esta alabanza? ¿Link de YouTube?)" 
+                              style="width: 100%; min-height: 80px; padding: 12px; background: #0f172a; border: 2px solid #334155; 
+                                     border-radius: 8px; color: #e2e8f0; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎵 Alabanzas Pendientes por Aprender</h2>
+                <div id="pendingSongsList" class="song-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>✅ Alabanzas Aprendidas (Movidas al Repertorio)</h2>
+                <div id="learnedSongsList" class="song-list"></div>
+            </div>
+        </div>
+
+        <!-- TAB: HISTORIAL -->
+        <div id="historial" class="tab-content">
+            <div class="card">
+                <h2>📜 Historial de Domingos (Últimas 4 semanas)</h2>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <!-- TAB: CONFIGURACIÓN (solo Líder) -->
+        <div id="configuracion" class="tab-content">
+
+            <div class="card">
+                <h2>⚙️ Configuración General</h2>
+                <p style="color:#94a3b8; margin-bottom: 20px;">Personaliza la app para que hable el idioma de tu congregación.</p>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; color:#60a5fa; font-weight:700; margin-bottom:8px;">🏛️ Nombre de la Iglesia</label>
+                    <input type="text" id="configChurchName" placeholder="Ej: CCINT Buin, Iglesia Central...">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; color:#60a5fa; font-weight:700; margin-bottom:8px;">🖼️ Logo de la Iglesia</label>
+                    <p style="color:#94a3b8; font-size:0.9em; margin-bottom:12px;">Imagen pequeña (PNG o JPG recomendado, máx. 200KB). Se muestra circular en el banner.</p>
+                    <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+                        <div id="logoPreviewWrapper" style="width:64px; height:64px; border-radius:50%; border:2px dashed #334155;
+                                                            background:#0f172a; display:flex; align-items:center; justify-content:center;
+                                                            overflow:hidden; flex-shrink:0;">
+                            <img id="logoPreviewImg" src="" alt="" style="display:none; width:100%; height:100%; object-fit:cover;">
+                            <span id="logoPreviewPlaceholder" style="font-size:1.8em;">🏛️</span>
+                        </div>
+                        <div style="flex:1;">
+                            <input type="file" id="logoFileInput" accept="image/*"
+                                   style="display:none;" onchange="handleLogoUpload(event)">
+                            <button onclick="document.getElementById('logoFileInput').click()"
+                                    style="margin-bottom:8px; background:#1e40af; width:100%;">
+                                📁 Seleccionar imagen
+                            </button>
+                            <button onclick="removeLogo()"
+                                    style="background:#7f1d1d; width:100%; font-size:0.9em; padding:8px;">
+                                🗑️ Quitar logo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎭 Nombres y Íconos de Roles</h2>
+                <p style="color:#94a3b8; margin-bottom: 20px;">Cambia cómo se llama cada rol para que suene natural en tu ministerio.</p>
+
+                <!-- ROL LÍDER -->
+                <div style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #7c3aed;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                        <div id="previewLiderIcon" style="font-size:2em;">👑</div>
+                        <div>
+                            <div style="font-weight:700; color:#dbeafe;" id="previewLiderName">Líder</div>
+                            <div style="font-size:0.85em; color:#94a3b8;">Acceso completo</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="configLiderIcon" placeholder="Ícono (ej: 👑 🎯 🌟 ✝️)" maxlength="4" style="max-width:100px; text-align:center; font-size:1.5em;">
+                        <input type="text" id="configLiderName" placeholder="Nombre del rol (ej: Director, Pastor de Adoración)">
+                    </div>
+                </div>
+
+                <!-- ROL MÚSICO -->
+                <div style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #0369a1;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                        <div id="previewMusicoIcon" style="font-size:2em;">🎸</div>
+                        <div>
+                            <div style="font-weight:700; color:#dbeafe;" id="previewMusicoName">Músico</div>
+                            <div style="font-size:0.85em; color:#94a3b8;">Puede sugerir canciones</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="configMusicoIcon" placeholder="Ícono (ej: 🎸 🎹 🎺 🎻)" maxlength="4" style="max-width:100px; text-align:center; font-size:1.5em;">
+                        <input type="text" id="configMusicoName" placeholder="Nombre del rol (ej: Músico, Siervo, Integrante)">
+                    </div>
+                </div>
+
+                <!-- ROL INVITADO -->
+                <div style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:20px; border-left: 4px solid #166534;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                        <div id="previewInvitadoIcon" style="font-size:2em;">🌱</div>
+                        <div>
+                            <div style="font-weight:700; color:#dbeafe;" id="previewInvitadoName">Invitado</div>
+                            <div style="font-size:0.85em; color:#94a3b8;">Solo lectura</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="configInvitadoIcon" placeholder="Ícono (ej: 🌱 🕊️ 🙏 ✨)" maxlength="4" style="max-width:100px; text-align:center; font-size:1.5em;">
+                        <input type="text" id="configInvitadoName" placeholder="Nombre del rol (ej: Invitado, Músico Nuevo, Visitante)">
+                    </div>
+                </div>
+
+                <button onclick="saveConfig()" style="width:100%;" class="btn-success">
+                    💾 Guardar Configuración
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>👥 Miembros del Equipo</h2>
+                <p style="color:#94a3b8; margin-bottom: 15px;">Gestiona los músicos registrados en la app.</p>
+                <div id="usersList"></div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

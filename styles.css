@@ -466,6 +466,11 @@ button.btn-small:hover {
     background: #042f2e;
     border: 1px solid var(--primary);
     box-shadow: 0 0 50px rgba(20, 184, 166, 0.2);
+    width: 90%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    text-align: center;
 }
 
 .role-option {

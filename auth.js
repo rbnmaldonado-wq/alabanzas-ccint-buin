@@ -151,12 +151,28 @@ function maybeEnableButtons() {
                 if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
                     console.log('OneTap skipped:', notification.getNotDisplayedReason());
                 }
-                // Pequeño delay e intentar flujo automático
-                setTimeout(() => handleAuthClick(), 1000);
+                // Pequeño delay e intentar flujo automático - ELIMINADO para evitar popup blocker
+                // setTimeout(() => handleAuthClick(), 1000);
+
+                // Si OneTap se cierra o no se muestra, mostrar botón manual inmediatamente
+                console.log('OneTap cerrado o no disponible. Esperando login manual.');
+                const manualContainer = document.getElementById('manualLoginContainer');
+                if (manualContainer) manualContainer.style.display = 'block';
+
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.style.display = 'none';
+
+                const loadingText = document.getElementById('loadingText');
+                if (loadingText) loadingText.textContent = 'Acceso Requerido';
+
+                const subtext = document.getElementById('loadingSubtext');
+                if (subtext) subtext.style.display = 'none';
             });
         } catch (e) {
             console.error(e);
-            handleAuthClick();
+            // handleAuthClick(); // No llamar automaticamente
+            const manualContainer = document.getElementById('manualLoginContainer');
+            if (manualContainer) manualContainer.style.display = 'block';
         }
     }
 }

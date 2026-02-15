@@ -610,16 +610,26 @@ function applyRolePermissions() {
         document.querySelectorAll('.lider-only').forEach(el => el.style.display = '');
         document.querySelectorAll('.musico-only').forEach(el => el.style.display = '');
         document.querySelectorAll('.musico-readonly').forEach(el => el.classList.remove('readonly-overlay'));
-        document.getElementById('tabDomingo').style.display = '';
-        document.getElementById('tabEnsayosAdmin').style.display = '';
+
+        const domingoNav = document.querySelector('.nav-item[data-tab="domingo"]');
+        if (domingoNav) domingoNav.style.display = '';
+
+        const adminPanel = document.getElementById('rehearsalAdminPanel');
+        if (adminPanel) adminPanel.style.display = '';
+
         if (invMsg) invMsg.style.display = 'none';
 
     } else if (isMusico()) {
         document.querySelectorAll('.lider-only').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.musico-only').forEach(el => el.style.display = '');
         document.querySelectorAll('.musico-readonly').forEach(el => el.classList.add('readonly-overlay'));
-        document.getElementById('tabDomingo').style.display = 'none';
-        document.getElementById('tabEnsayosAdmin').style.display = 'none';
+
+        const domingoNav = document.querySelector('.nav-item[data-tab="domingo"]');
+        if (domingoNav) domingoNav.style.display = 'none';
+
+        const adminPanel = document.getElementById('rehearsalAdminPanel');
+        if (adminPanel) adminPanel.style.display = 'none';
+
         if (invMsg) invMsg.style.display = 'none';
 
     } else {
@@ -627,8 +637,13 @@ function applyRolePermissions() {
         document.querySelectorAll('.lider-only').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.musico-only').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.musico-readonly').forEach(el => el.classList.add('readonly-overlay'));
-        document.getElementById('tabDomingo').style.display = 'none';
-        document.getElementById('tabEnsayosAdmin').style.display = 'none';
+
+        const domingoNav = document.querySelector('.nav-item[data-tab="domingo"]');
+        if (domingoNav) domingoNav.style.display = 'none';
+
+        const adminPanel = document.getElementById('rehearsalAdminPanel');
+        if (adminPanel) adminPanel.style.display = 'none';
+
         if (invMsg) invMsg.style.display = 'block';
     }
 

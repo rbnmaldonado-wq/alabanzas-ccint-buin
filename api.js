@@ -29,7 +29,9 @@ async function createChurchSheet() {
         return newFileId;
     } catch (error) {
         console.error('Error creando hoja:', error);
-        alert('❌ Error al crear la hoja. Asegúrate de haber habilitado la API de Google Drive en tu consola.');
+        // Mostrar mensaje técnico para depuración
+        const errorMsg = error.result?.error?.message || error.message || JSON.stringify(error);
+        alert(`❌ Error al crear la hoja:\n${errorMsg}\n\nPosibles causas:\n1. API Key restringida (solo Sheets?)\n2. API Drive no habilitada`);
         throw error;
     }
 }

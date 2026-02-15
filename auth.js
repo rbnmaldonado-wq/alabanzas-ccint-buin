@@ -80,6 +80,10 @@ function handleAuthClick() {
 
         // Iniciar carga de datos
         if (window.loadAllData) {
+            // Verificar primero si tenemos config de iglesia
+            const hasConfig = await checkChurchConfig();
+            if (!hasConfig) return; // Detener flujo si no hay iglesia seleccionada
+
             await window.loadAllData();
         } else {
             console.error("loadAllData no está disponible globalmente aún");

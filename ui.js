@@ -569,3 +569,69 @@ function selectRole(role) {
     const nameVal = document.getElementById('newUserName').value.trim();
     document.getElementById('confirmRoleBtn').disabled = !nameVal;
 }
+
+// Lógica de Selección de Iglesia (Multi-Tenant)
+async function checkChurchConfig() {
+    const sheetId = getSpreadsheetId();
+    if (!sheetId) {
+        showChurchSelection();
+        return false;
+    }
+    return true; // Tenemos configuración, proceder
+}
+
+function showChurchSelection() {
+    document.getElementById('churchSelectionOverlay').classList.add('active');
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+async function validateAndSaveChurch() {
+    const input = document.getElementById('churchIdInput').value.trim();
+    if (!input) return;
+
+    // Validación básica de formato de ID de Google Sheets
+    // Son largos, alfanuméricos y a veces tienen guiones o guiones bajos
+    if (input.length < 20) {
+        alert('⚠️ Ese ID parece muy corto. Asegúrate de copiar el ID correcto de la URL de tu hoja de cálculo.');
+        return;
+    }
+
+    const btn = document.getElementById('joinChurchBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Verificando...';
+    btn.disabled = true;
+
+    // Intentar leer la hoja con este ID para verificar acceso
+    try {
+        // Guardamos temporalmente para probar
+        setSpreadsheetId(input);
+
+        // Intentar leer la configuración (una celda liviana)
+        await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: input,
+            range: 'Users!A1',
+        });
+
+        // Si no explota, es válido
+        alert('✅ ¡Conexión exitosa! Bienvenido a tu iglesia.');
+        document.getElementById('churchSelectionOverlay').classList.remove('active');
+
+        // Recargar la app para iniciar flujo normal
+        location.reload();
+
+    } catch (error) {
+        console.error('Error validando hoja:', error);
+        setSpreadsheetId(''); // Revertir
+        alert('❌ No se pudo conectar. Verifica que:\n1. El ID sea correcto.\n2. La hoja tenga permisos de lectura para "Cualquiera con el enlace" o tu usuario.\n3. La API Key tenga acceso.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+}
+
+function switchChurch() {
+    if (confirm('¿Estás seguro que quieres cambiar de iglesia? Se borrará la configuración actual y tendrás que ingresar un nuevo ID.')) {
+        setSpreadsheetId('');
+        location.reload();
+    }
+}

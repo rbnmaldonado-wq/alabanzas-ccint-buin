@@ -13,7 +13,7 @@ function updateSyncStatus(status, text) {
 async function readSheet(range) {
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: SPREADSHEET_ID,
+            spreadsheetId: getSpreadsheetId(),
             range: range,
         });
         return response.result.values || [];
@@ -34,7 +34,7 @@ async function writeSheet(range, values) {
         }
 
         await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: SPREADSHEET_ID,
+            spreadsheetId: getSpreadsheetId(),
             range: range,
             valueInputOption: 'RAW',
             resource: { values: values },

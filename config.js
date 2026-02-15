@@ -1,8 +1,22 @@
 // CONFIGURACIÓN (Rellena esto con tus propias credenciales)
 const CLIENT_ID = '317250130958-9umc39ki6fjtv3isjd5u6a4iqhjbquhp.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyA0qFoeOwG7q14iEO-F91t3HnQ480AneUk';
-const SPREADSHEET_ID = '1qBQRPiAomG1wVzIF4XmHMoDlPKXbVcrQKQD4JnXVdF0';
+// La hoja de cálculo se determina dinámicamente ahora
+// const SPREADSHEET_ID = '...'; se elimina para usar localStorage
 const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+
+function getSpreadsheetId() {
+    return localStorage.getItem('worship_manager_sheet_id') || '';
+}
+
+function setSpreadsheetId(id) {
+    if (id) {
+        localStorage.setItem('worship_manager_sheet_id', id.trim());
+        // Forzar recarga limpia para tomar el nuevo ID
+    } else {
+        localStorage.removeItem('worship_manager_sheet_id');
+    }
+}
 
 // Variables globales de estado (se usan en multiples archivos)
 let songs = [];

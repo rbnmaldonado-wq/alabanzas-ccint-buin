@@ -47,13 +47,20 @@
             </button>
 
             <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
-                <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 10px;">¿No tienes una hoja de cálculo aún?
-                </p>
-                <button
-                    onclick="window.open('https://docs.google.com/spreadsheets/d/1qBQRPiAomG1wVzIF4XmHMoDlPKXbVcrQKQD4JnXVdF0/copy', '_blank')"
-                    style="width: 100%; padding: 10px; font-size: 0.9em; background: #0f766e; border: 1px solid #115e59; color: white;">
-                    📑 Copiar Plantilla Oficial
+                <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 10px;">¿Eres nuevo? Crea tu base de datos en
+                    1 click:</p>
+                <button id="createChurchBtn" onclick="validateAndSaveChurch('AUTO')"
+                    style="width: 100%; padding: 12px; font-size: 0.95em; background: #0f766e; border: 1px solid #115e59; color: white;">
+                    ✨ Crear Iglesia Automáticamente
                 </button>
+                <p style="font-size: 0.75em; color: #64748b; margin-top: 8px;">
+                    Se te pedirá permiso para usar Google Drive una única vez.
+                </p>
+
+                <p style="color: #475569; font-size: 0.8em; margin-top: 15px; cursor:pointer; text-decoration:underline;"
+                    onclick="window.open('https://docs.google.com/spreadsheets/d/1qBQRPiAomG1wVzIF4XmHMoDlPKXbVcrQKQD4JnXVdF0/copy', '_blank')">
+                    O haz una copia manual (método antiguo)
+                </p>
             </div>
         </div>
     </div>

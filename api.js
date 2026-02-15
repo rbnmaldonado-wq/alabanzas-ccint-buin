@@ -10,6 +10,30 @@ function updateSyncStatus(status, text) {
 }
 
 // Leer datos de Google Sheets
+// ID de la Plantilla Maestra (pública)
+const TEMPLATE_ID = '1qBQRPiAomG1wVzIF4XmHMoDlPKXbVcrQKQD4JnXVdF0';
+
+async function createChurchSheet() {
+    try {
+        updateSyncStatus('syncing', 'Creando base de datos...');
+
+        const response = await gapi.client.drive.files.copy({
+            fileId: TEMPLATE_ID,
+            resource: {
+                name: 'Worship Manager - Mi Iglesia',
+            },
+        });
+
+        const newFileId = response.result.id;
+        console.log('Nueva hoja creada:', newFileId);
+        return newFileId;
+    } catch (error) {
+        console.error('Error creando hoja:', error);
+        alert('❌ Error al crear la hoja. Asegúrate de haber habilitado la API de Google Drive en tu consola.');
+        throw error;
+    }
+}
+
 async function readSheet(range) {
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({

@@ -3,7 +3,7 @@ const CLIENT_ID = '317250130958-9umc39ki6fjtv3isjd5u6a4iqhjbquhp.apps.googleuser
 const API_KEY = 'AIzaSyA0qFoeOwG7q14iEO-F91t3HnQ480AneUk';
 // La hoja de cálculo se determina dinámicamente ahora
 // const SPREADSHEET_ID = '...'; se elimina para usar localStorage
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 
 function getSpreadsheetId() {
     return localStorage.getItem('worship_manager_sheet_id') || '';

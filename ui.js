@@ -603,12 +603,17 @@ async function validateAndSaveChurch(mode = 'MANUAL') {
 
     try {
         if (mode === 'AUTO') {
-            // Asegurarse de que tenemos token con scope de Drive
-            if (!gapi.client.drive) {
-                // Si no está cargada la librería drive, algo falló en init
-                // O el usuario no dio permisos. Forzamos popup de consent.
-                await tokenClient.requestAccessToken({ prompt: 'consent' });
-            }
+            // FORZAR la petición de permisos para asegurar que tenemos drive.readonly y drive.file
+            // Incluso si ya parece estar logueado, necesitamos confirmar los nuevos scopes.
+            console.log("Solicitando permisos de Drive...");
+            await new Promise((resolve, reject) => {
+                tokenClient.callback = (resp) => {
+                    if (resp.error) reject(resp);
+                    resolve(resp);
+                };
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            });
+
             // Crear copia automática
             sheetId = await createChurchSheet();
         } else {

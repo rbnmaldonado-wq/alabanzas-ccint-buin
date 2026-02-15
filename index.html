@@ -426,6 +426,24 @@
                 <div id="usersList"></div>
             </div>
 
+            <div class="card" style="border-left: 4px solid #f43f5e;">
+                <h2>⚠️ Zona de Peligro</h2>
+                <p style="color:#dbeafe; margin-bottom: 15px;">
+                    Si cambias de iglesia, se desconectará la hoja de cálculo actual.
+                </p>
+                <button onclick="switchChurch()"
+                    style="width:100%; background: #be123c; color: white; margin-bottom: 15px;">
+                    🔄 Cambiar de Iglesia (Desconectar)
+                </button>
+
+                <p style="color:#dbeafe; margin-bottom: 15px; border-top: 1px solid #be123c; padding-top: 15px;">
+                    Si el líder dejó el equipo o necesitas reiniciar los roles:
+                </p>
+                <button onclick="resetUsers()" style="width:100%; background: #7f1d1d; color: white;">
+                    ☢️ Resetear Todos los Usuarios
+                </button>
+            </div>
+
         </div>
     </div>
 </body>

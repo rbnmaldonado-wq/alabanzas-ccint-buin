@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v11 LOADED - HISTORY FIX APPLIED ', 'background: #22c55e; color: #ffffff; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v12 LOADED - ALL NULL CRASHES FIXED ', 'background: #22c55e; color: #ffffff; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {
@@ -491,8 +491,10 @@ function updateHeaderLogo(src) {
 
 function applyConfigToUI() {
     // Subtítulo con nombre de iglesia
-    document.querySelector('.subtitle').textContent =
-        `Sistema musical de ${appConfig.churchName} - SINCRONIZADO`;
+    const subtitleEl = document.querySelector('.subtitle');
+    if (subtitleEl) {
+        subtitleEl.textContent = `Sistema musical de ${appConfig.churchName} - SINCRONIZADO`;
+    }
 
     // Logo en header
     updateHeaderLogo(appConfig.logoBase64 || '');
@@ -500,13 +502,15 @@ function applyConfigToUI() {
     // Badge del usuario
     updateUserUI();
 
-    // Opciones en pantalla de selección de rol
-    document.querySelector('#roleOptLider .role-option-title').textContent =
-        `${appConfig.liderIcon} ${appConfig.liderName} `;
-    document.querySelector('#roleOptMusico .role-option-title').textContent =
-        `${appConfig.musicoIcon} ${appConfig.musicoName} `;
-    document.querySelector('#roleOptInvitado .role-option-title').textContent =
-        `${appConfig.invitadoIcon} ${appConfig.invitadoName} `;
+    // Opciones en pantalla de selección de rol (con protección)
+    const liderOpt = document.querySelector('#roleOptLider .role-option-title');
+    if (liderOpt) liderOpt.textContent = `${appConfig.liderIcon} ${appConfig.liderName} `;
+
+    const musicoOpt = document.querySelector('#roleOptMusico .role-option-title');
+    if (musicoOpt) musicoOpt.textContent = `${appConfig.musicoIcon} ${appConfig.musicoName} `;
+
+    const invitadoOpt = document.querySelector('#roleOptInvitado .role-option-title');
+    if (invitadoOpt) invitadoOpt.textContent = `${appConfig.invitadoIcon} ${appConfig.invitadoName} `;
 
     // Previsualizaciones en config
     document.getElementById('previewLiderIcon').textContent = appConfig.liderIcon;

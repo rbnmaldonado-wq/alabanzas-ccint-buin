@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v16 LOADED - CONFIG PREVIEW FIX APPLIED ', 'background: #f59e0b; color: #000000; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v17 LOADED - NUCLEAR CACHE BUST ', 'background: #ef4444; color: #ffffff; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {

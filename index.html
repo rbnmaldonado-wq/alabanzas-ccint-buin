@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Material Icons for Sidebar -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=12">
+    <link rel="stylesheet" href="styles.css?v=13">
 
     <!-- Scripts de la Aplicación (Orden Importante) -->
     <script src="config.js"></script>
@@ -132,6 +132,23 @@
                     Intentar de nuevo manualmente
                 </button>
             </div>
+
+            <!-- Failsafe Script -->
+            <script>
+                setTimeout(() => {
+                    const spinner = document.getElementById('loadingSpinner');
+                    const manualContainer = document.getElementById('manualLoginContainer');
+                    const loadingText = document.getElementById('loadingText');
+
+                    // Si el contenedor manual sigue oculto y seguimos en el overlay
+                    if (manualContainer && manualContainer.style.display === 'none') {
+                        console.warn("Failsafe triggers: showing manual login");
+                        if (spinner) spinner.style.display = 'none';
+                        if (loadingText) loadingText.textContent = '¿Problemas de conexión?';
+                        if (manualContainer) manualContainer.style.display = 'block';
+                    }
+                }, 5000); // 5 segundos de espera máxima absoluta
+            </script>
         </div>
     </div>
 

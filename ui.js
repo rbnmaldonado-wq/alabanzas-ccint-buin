@@ -1,30 +1,61 @@
 // Funciones de UI
 
-function showTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+// Funciones de UI
 
-    const tabContent = document.getElementById(tabName);
-    if (tabContent) tabContent.classList.add('active');
+// Inicializar Navegación Lateral
+document.addEventListener('DOMContentLoaded', () => {
+    const navItems = document.querySelectorAll('.nav-item');
 
-    // Encontrar el botón correspondiente
-    const buttons = document.querySelectorAll('.tab-button');
-    for (let btn of buttons) {
-        if (btn.textContent.includes(tabName) ||
-            (tabName === 'domingo' && btn.textContent.includes('Domingo')) ||
-            (tabName === 'ensayos' && btn.textContent.includes('Ensayos')) ||
-            (tabName === 'pendientes' && btn.textContent.includes('Pendientes')) ||
-            (tabName === 'historial' && btn.textContent.includes('Historial')) ||
-            (tabName === 'configuracion' && btn.textContent.includes('Configuracion'))) {
-            // Esto es un poco frágil, mejor usar IDs en los botones en el futuro
-        }
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const tabName = item.getAttribute('data-tab');
+            const pageTitle = item.getAttribute('data-title');
+            switchTab(tabName, pageTitle);
+        });
+    });
+
+    // Restaurar pestaña activa si existe
+    const activeTab = document.querySelector('.nav-item.active');
+    if (activeTab) {
+        const tabName = activeTab.getAttribute('data-tab');
+        const pageTitle = activeTab.getAttribute('data-title');
+        // Asegurar que el contenido también esté activo
+        switchTab(tabName, pageTitle);
     }
-    // Hack rápido para los botones que no tienen ID o onclick directo
-    if (event && event.target) {
-        event.target.classList.add('active');
+});
+
+function switchTab(tabName, pageTitle) {
+    // 1. Ocultar todas las secciones
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+        tab.style.display = 'none'; // Asegurar ocultamiento
+    });
+
+    // 2. Desactivar todos los items del sidebar
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // 3. Mostrar sección seleccionada
+    const selectedTab = document.getElementById(tabName + 'Tab');
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+        selectedTab.style.display = 'block';
     }
 
-    // Cargar datos al abrir configuración
+    // 4. Activar item del sidebar correspondiente
+    const activeItem = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+    if (activeItem) {
+        activeItem.classList.add('active');
+    }
+
+    // 5. Actualizar Título de la Página
+    const titleElement = document.getElementById('pageTitle');
+    if (titleElement && pageTitle) {
+        titleElement.textContent = pageTitle;
+    }
+
+    // Lógica específica por pestaña
     if (tabName === 'configuracion') loadConfigForm();
 }
 
@@ -49,23 +80,48 @@ function renderSongs() {
             <button class="btn-small btn-danger" onclick="deleteSong(${song.id})">🗑️</button>
         ` : '';
         return `
-            <div class="song-item">
-                <div class="song-info">
-                    <div class="song-name">${song.name}</div>
-                    <div class="song-meta">
-                        Dificultad: ${song.difficulty}
-                        ${hasLinks ? '<br>' : ''}
-                        ${song.youtubeLink ? `<a href="${song.youtubeLink}" target="_blank" style="color: #ef4444;">▶️ YouTube</a>` : ''}
-                        ${song.pdfLink ? `<a href="${song.pdfLink}" target="_blank" style="color: #2dd4bf;">📄 Ver PDF</a>` : ''}
+    container.innerHTML = songs.map(song => {
+        const hasLinks = song.youtubeLink || song.pdfLink;
+        // Determine difficulty color/badge
+        let difficultyBadge = '';
+        if (song.difficulty === 'Baja') difficultyBadge = '<span class="badge badge-low">Baja</span>';
+        else if (song.difficulty === 'Media') difficultyBadge = '<span class="badge badge-medium">Media</span>';
+        else difficultyBadge = '<span class="badge badge-high">Alta</span>';
+
+        const adminButtons = isLider() ? `
+            < button class="icon-btn edit-btn" onclick = "editSong(${song.id})" title = "Editar" > <span class="material-icons-round">edit</span></button >
+                <button class="icon-btn delete-btn" onclick="deleteSong(${song.id})" title="Eliminar"><span class="material-icons-round">delete</span></button>
+        ` : '';
+
+        return `
+            < div class="glass-card p-5 rounded-xl group cursor-pointer transition-all duration-300 hover:-translate-y-1" style = "margin-bottom: 20px; padding: 20px; border-radius: 12px; position: relative;" >
+                <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <div class="p-2 bg-primary/20 rounded-lg" style="background: rgba(20, 184, 166, 0.1); padding: 8px; border-radius: 8px;">
+                        <span class="material-icons-round text-primary text-xl" style="color: var(--primary);">audiotrack</span>
+                    </div>
+                    ${difficultyBadge}
+                </div>
+                
+                <h4 class="text-lg font-outfit font-bold mb-1 group-hover:text-primary transition-colors" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: white;">${song.name}</h4>
+                
+                <div class="song-meta" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                    ${song.artist ? song.artist : 'Artista Desconocido'}
+                </div>
+
+                <div class="flex items-center justify-between" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                    <div class="flex gap-2" style="display: flex; gap: 10px;">
+                        ${song.key ? `<div class="key-badge" style="background: rgba(20, 184, 166, 0.1); padding: 4px 8px; border-radius: 6px; color: var(--primary); font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(20, 184, 166, 0.2);">${song.key}</div>` : ''}
+                        ${song.bpm ? `<div class="bpm-badge" style="background: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 6px; color: #cbd5e1; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.1);">${song.bpm} BPM</div>` : ''}
+                    </div>
+                    
+                    <div class="song-actions" style="display: flex; gap: 5px;">
+                        ${song.youtubeLink ? `<button class="icon-btn" onclick="window.open('${song.youtubeLink}', '_blank')" title="Ver en YouTube" style="color: #ef4444;"><span class="material-icons-round">play_circle</span></button>` : ''}
+                        ${song.pdfLink ? `<button class="icon-btn" onclick="window.open('${song.pdfLink}', '_blank')" title="Ver PDF" style="color: #2dd4bf;"><span class="material-icons-round">description</span></button>` : ''}
+                        ${adminButtons}
                     </div>
                 </div>
-                <div class="song-actions">
-                    ${song.youtubeLink ? `<button class="btn-small" style="background: #dc2626;" onclick="window.open('${song.youtubeLink}', '_blank')">▶️</button>` : ''}
-                    ${song.pdfLink ? `<button class="btn-small" style="background: #0f766e;" onclick="window.open('${song.pdfLink}', '_blank')">📄</button>` : ''}
-                    ${adminButtons}
-                </div>
-            </div>
-        `;
+            </div >
+            `;
     }).join('');
 }
 
@@ -77,7 +133,7 @@ function updateStats() {
 function updateSongSelector() {
     const selector = document.getElementById('songSelector');
     selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+        songs.map(song => `< option value = "${song.id}" > ${ song.name }</option > `).join('');
     updateRehearsalSelector();
 }
 
@@ -86,25 +142,25 @@ function renderSundayList() {
 
     if (currentSundaySongs.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">🎤</div>
                 <p>No hay alabanzas seleccionadas para este domingo</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
     container.innerHTML = currentSundaySongs.map((songId, index) => {
         const song = songs.find(s => s.id === songId);
         return `
-            <div class="selected-song">
+            < div class="selected-song" >
                 <div class="song-info">
                     <div class="song-name">${index + 1}. ${song.name}</div>
                     <div class="song-meta" style="color: #99f6e4;">${song.difficulty}</div>
                 </div>
                 <button class="btn-small btn-danger" onclick="removeFromSunday(${songId})">❌</button>
-            </div>
-        `;
+            </div >
+            `;
     }).join('');
 }
 
@@ -142,16 +198,16 @@ function checkRepetitions() {
         }).join(', ');
 
         document.getElementById('repetitionWarning').innerHTML = `
-            <div class="warning">
+            < div class="warning" >
                 ⚠️ <strong>Atención:</strong> Las siguientes alabanzas se tocaron en las últimas 4 semanas: <strong>${repeatedNames}</strong>
-            </div>
-        `;
+            </div >
+            `;
     } else {
         document.getElementById('repetitionWarning').innerHTML = `
-            <div class="card" style="background: #064e3b; border-color: #059669;">
+            < div class="card" style = "background: #064e3b; border-color: #059669;" >
                 ✅ <strong>Perfecto:</strong> Ninguna de estas alabanzas se ha tocado en las últimas 4 semanas
-            </div>
-        `;
+            </div >
+            `;
     }
 }
 
@@ -160,11 +216,11 @@ function renderHistory() {
 
     if (sundays.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">📅</div>
                 <p>No hay domingos registrados todavía</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
@@ -177,14 +233,14 @@ function renderHistory() {
         });
 
         const adminButtons = isLider() ? `
-            <div class="history-actions">
+            < div class="history-actions" >
                 <button class="btn-small" style="background:#0f766e;" onclick="editSundayPrompt(${sunday.id})" title="Editar">✏️</button>
                 <button class="btn-small btn-danger" onclick="deleteSunday(${sunday.id})" title="Eliminar">🗑️</button>
-            </div>
-        ` : '';
+            </div >
+            ` : '';
 
         return `
-            <div class="history-item">
+            < div class="history-item" >
                 <div class="history-item-header">
                     <div class="history-date">${formatDate(sunday.date)}</div>
                     ${adminButtons}
@@ -192,8 +248,8 @@ function renderHistory() {
                 <div class="history-songs">
                     ${songNames.map(name => `<span class="history-song-tag">${name}</span>`).join('')}
                 </div>
-            </div>
-        `;
+            </div >
+            `;
     }).join('');
 }
 
@@ -202,12 +258,12 @@ function renderPendingSongs() {
 
     if (pendingSongs.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">⏳</div>
                 <p>No hay alabanzas pendientes por aprender</p>
                 <p style="font-size: 0.9em; margin-top: 10px;">Sugiere una nueva alabanza arriba</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
@@ -224,7 +280,7 @@ function renderPendingSongs() {
         };
 
         return `
-            <div class="song-item" style="${priorityColors[song.priority]}">
+            < div class="song-item" style = "${priorityColors[song.priority]}" >
                 <div class="song-info">
                     <div class="song-name">${song.name}</div>
                     <div class="song-meta">
@@ -241,8 +297,8 @@ function renderPendingSongs() {
                         🗑️
                     </button>
                 </div>
-            </div>
-        `;
+            </div >
+            `;
     }).join('');
 }
 
@@ -251,25 +307,25 @@ function renderLearnedSongs() {
 
     if (learnedSongs.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">🎉</div>
                 <p>Aún no hay alabanzas aprendidas desde las sugerencias</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
     container.innerHTML = learnedSongs.slice(-10).reverse().map(song => `
-        <div class="song-item" style="background: #064e3b; border-left: 4px solid #22c55e;">
-            <div class="song-info">
-                <div class="song-name">✅ ${song.name}</div>
-                <div class="song-meta">
-                    Sugerida por: ${song.suggestedBy} | 
-                    Aprendida: ${new Date(song.learnedDate).toLocaleDateString('es-ES')}
+            < div class="song-item" style = "background: #064e3b; border-left: 4px solid #22c55e;" >
+                <div class="song-info">
+                    <div class="song-name">✅ ${song.name}</div>
+                    <div class="song-meta">
+                        Sugerida por: ${song.suggestedBy} |
+                        Aprendida: ${new Date(song.learnedDate).toLocaleDateString('es-ES')}
+                    </div>
                 </div>
-            </div>
-        </div>
-    `).join('');
+        </div >
+            `).join('');
 }
 
 function renderRehearsalList() {
@@ -277,32 +333,32 @@ function renderRehearsalList() {
 
     if (currentRehearsalSongs.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">🎸</div>
                 <p>No hay alabanzas seleccionadas para este ensayo</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
     container.innerHTML = currentRehearsalSongs.map((songId, index) => {
         const song = songs.find(s => s.id === songId);
         return `
-            <div class="selected-song">
+            < div class="selected-song" >
                 <div class="song-info">
                     <div class="song-name">${index + 1}. ${song.name}</div>
                     <div class="song-meta" style="color: #99f6e4;">${song.difficulty}</div>
                 </div>
                 <button class="btn-small btn-danger" onclick="removeFromRehearsal(${songId})">❌</button>
-            </div>
-        `;
+            </div >
+            `;
     }).join('');
 }
 
 function updateRehearsalSelector() {
     const selector = document.getElementById('rehearsalSongSelector');
     selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+        songs.map(song => `< option value = "${song.id}" > ${ song.name }</option > `).join('');
 }
 
 function renderRehearsalHistory() {
@@ -310,11 +366,11 @@ function renderRehearsalHistory() {
 
     if (rehearsals.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
+            < div class="empty-state" >
                 <div class="empty-state-icon">📝</div>
                 <p>No hay ensayos registrados todavía</p>
-            </div>
-        `;
+            </div >
+            `;
         return;
     }
 
@@ -337,23 +393,23 @@ function renderRehearsalHistory() {
             return song ? song.name : 'Alabanza eliminada';
         });
         const adminButtons = isLider() ? `
-            <div class="history-actions">
+            < div class="history-actions" >
                 <button class="btn-small" style="background:#0f766e;" onclick="editRehearsalPrompt(${rehearsal.id})" title="Editar">✏️</button>
                 <button class="btn-small btn-danger" onclick="deleteRehearsal(${rehearsal.id})" title="Eliminar">🗑️</button>
-            </div>
-        ` : '';
+            </div >
+            ` : '';
         return `
-            <div class="history-item" style="border-left-color: ${color};">
+            < div class="history-item" style = "border-left-color: ${color};" >
                 <div class="history-item-header">
                     <div class="history-date">📅 ${formatDate(rehearsal.date)} — ⏰ ${rehearsal.time}</div>
                     ${adminButtons}
                 </div>
-                ${rehearsal.notes ? `<p style="color: #94a3b8; font-size:0.9em;">📝 ${rehearsal.notes}</p>` : ''}
-                <div class="history-songs">
-                    ${songNames.map(name => `<span class="history-song-tag">${name}</span>`).join('')}
-                </div>
-            </div>
-        `;
+                ${ rehearsal.notes ? `<p style="color: #94a3b8; font-size:0.9em;">📝 ${rehearsal.notes}</p>` : '' }
+        <div class="history-songs">
+            ${songNames.map(name => `<span class="history-song-tag">${name}</span>`).join('')}
+        </div>
+            </div >
+            `;
     };
 
     if (upcoming.length > 0) {
@@ -426,7 +482,7 @@ function updateHeaderLogo(src) {
 function applyConfigToUI() {
     // Subtítulo con nombre de iglesia
     document.querySelector('.subtitle').textContent =
-        `Sistema musical de ${appConfig.churchName} - SINCRONIZADO`;
+        `Sistema musical de ${ appConfig.churchName } - SINCRONIZADO`;
 
     // Logo en header
     updateHeaderLogo(appConfig.logoBase64 || '');
@@ -436,11 +492,11 @@ function applyConfigToUI() {
 
     // Opciones en pantalla de selección de rol
     document.querySelector('#roleOptLider .role-option-title').textContent =
-        `${appConfig.liderIcon} ${appConfig.liderName}`;
+        `${ appConfig.liderIcon } ${ appConfig.liderName } `;
     document.querySelector('#roleOptMusico .role-option-title').textContent =
-        `${appConfig.musicoIcon} ${appConfig.musicoName}`;
+        `${ appConfig.musicoIcon } ${ appConfig.musicoName } `;
     document.querySelector('#roleOptInvitado .role-option-title').textContent =
-        `${appConfig.invitadoIcon} ${appConfig.invitadoName}`;
+        `${ appConfig.invitadoIcon } ${ appConfig.invitadoName } `;
 
     // Previsualizaciones en config
     document.getElementById('previewLiderIcon').textContent = appConfig.liderIcon;
@@ -472,30 +528,30 @@ function renderUsersList() {
         return;
     }
     const roleLabel = (role) => {
-        if (role === 'lider') return `${appConfig.liderIcon} ${appConfig.liderName}`;
-        if (role === 'musico') return `${appConfig.musicoIcon} ${appConfig.musicoName}`;
-        return `${appConfig.invitadoIcon} ${appConfig.invitadoName}`;
+        if (role === 'lider') return `${ appConfig.liderIcon } ${ appConfig.liderName } `;
+        if (role === 'musico') return `${ appConfig.musicoIcon } ${ appConfig.musicoName } `;
+        return `${ appConfig.invitadoIcon } ${ appConfig.invitadoName } `;
     };
 
     container.innerHTML = users.map(u => `
-        <div style="display:flex; justify-content:space-between; align-items:center;
-                    background:#0f172a; border-radius:10px; padding:14px 18px; margin-bottom:10px;">
-            <div>
+            < div style = "display:flex; justify-content:space-between; align-items:center;
+        background:#0f172a; border - radius: 10px; padding: 14px 18px; margin - bottom: 10px; ">
+            < div >
                 <div style="font-weight:700; color:#dbeafe;">${u.name}</div>
                 <div style="font-size:0.85em; color:#64748b;">${u.email}</div>
-            </div>
+            </div >
             <div style="display:flex; align-items:center; gap:10px;">
                 <select onchange="changeUserRole('${u.email}', this.value)"
-                        style="background:#1e293b; border:1px solid #334155; border-radius:6px;
+                    style="background:#1e293b; border:1px solid #334155; border-radius:6px;
                                color:#e2e8f0; padding:5px 8px; font-size:0.9em;">
-                    <option value="lider"    ${u.role === 'lider' ? 'selected' : ''}>👑 ${appConfig.liderName}</option>
-                    <option value="musico"   ${u.role === 'musico' ? 'selected' : ''}>🎸 ${appConfig.musicoName}</option>
+                    <option value="lider" ${u.role === 'lider' ? 'selected' : ''}>👑 ${appConfig.liderName}</option>
+                    <option value="musico" ${u.role === 'musico' ? 'selected' : ''}>🎸 ${appConfig.musicoName}</option>
                     <option value="invitado" ${u.role === 'invitado' ? 'selected' : ''}>🌱 ${appConfig.invitadoName}</option>
                 </select>
                 <button class="btn-small btn-danger" onclick="removeUser('${u.email}')">🗑️</button>
             </div>
-        </div>
-    `).join('');
+        </div >
+            `).join('');
 }
 
 function updateUserUI() {
@@ -505,11 +561,11 @@ function updateUserUI() {
 
     const badge = document.getElementById('userRoleBadge');
     if (currentUser.role === 'lider') {
-        badge.innerHTML = `<span class="role-badge role-lider">${appConfig.liderIcon} ${appConfig.liderName}</span>`;
+        badge.innerHTML = `< span class="role-badge role-lider" > ${ appConfig.liderIcon } ${ appConfig.liderName }</span > `;
     } else if (currentUser.role === 'musico') {
-        badge.innerHTML = `<span class="role-badge role-musico">${appConfig.musicoIcon} ${appConfig.musicoName}</span>`;
+        badge.innerHTML = `< span class="role-badge role-musico" > ${ appConfig.musicoIcon } ${ appConfig.musicoName }</span > `;
     } else {
-        badge.innerHTML = `<span class="role-badge role-invitado">${appConfig.invitadoIcon} ${appConfig.invitadoName}</span>`;
+        badge.innerHTML = `< span class="role-badge role-invitado" > ${ appConfig.invitadoIcon } ${ appConfig.invitadoName }</span > `;
     }
 }
 
@@ -563,7 +619,7 @@ function selectRole(role) {
     selectedRole = role;
     document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));
     const roleId = role.charAt(0).toUpperCase() + role.slice(1);
-    const el = document.getElementById(`roleOpt${roleId}`);
+    const el = document.getElementById(`roleOpt${ roleId } `);
     if (el) el.classList.add('selected');
 
     const nameVal = document.getElementById('newUserName').value.trim();

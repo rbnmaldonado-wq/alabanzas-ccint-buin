@@ -1,12 +1,7 @@
-/* Sanctuary Teal Theme - Worship Manager */
+/* Sanctuary Teal Theme - Worship Manager V2 (Stitch Redesign) */
 :root {
     /* Color Palette - Teal/Sacred */
     --bg-main: #022c22;
-    /* Teal 950 */
-    --bg-gradient-start: #042f2e;
-    --bg-gradient-end: #111827;
-    /* Slate 900 */
-
     --primary: #14b8a6;
     /* Teal 500 */
     --primary-hover: #0d9488;
@@ -14,9 +9,7 @@
     --primary-glow: rgba(20, 184, 166, 0.4);
 
     --surface: rgba(19, 78, 74, 0.4);
-    /* Teal 900 alpha */
     --surface-border: rgba(45, 212, 191, 0.2);
-    /* Teal 400 alpha */
 
     --text-main: #f0fdfa;
     /* Teal 50 */
@@ -27,16 +20,24 @@
 
     /* Roles */
     --role-lider: #d97706;
-    /* Amber 600 - Gold/Crown */
     --role-musico: #0d9488;
-    /* Teal 600 */
     --role-invitado: #059669;
-    /* Emerald 600 */
 
     /* Spacing & Radius */
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 12px;
+
+    /* --- Enhanced Glassmorphism & Layout --- */
+    --sidebar-width: 80px;
+    --sidebar-width-expanded: 240px;
+    --header-height: 80px;
+
+    /* Stitch V2 Theme Colors */
+    --teal-glow: 0 0 20px rgba(20, 184, 166, 0.4);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(16, 34, 32, 0.6);
+    --glass-bg-hover: rgba(16, 34, 32, 0.8);
 }
 
 * {
@@ -56,205 +57,245 @@ body {
     background-attachment: fixed;
     color: var(--text-main);
     min-height: 100vh;
-    padding: 20px;
-    overflow-x: hidden;
+    overflow: hidden;
+    /* App-like feel */
+    display: flex;
+    /* Sidebar layout */
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* --- App Layout --- */
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
 }
 
-/* --- Header --- */
-header {
-    text-align: center;
-    padding: 40px 20px;
-    background: linear-gradient(180deg, rgba(20, 184, 166, 0.15) 0%, rgba(4, 47, 46, 0.4) 100%);
-    border: 1px solid var(--surface-border);
-    border-radius: var(--radius-lg);
-    margin-bottom: 30px;
-    position: relative;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 40px rgba(20, 184, 166, 0.1);
-}
-
-.header-center {
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    background: rgba(16, 34, 32, 0.4);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 30px 0;
+    z-index: 100;
+    transition: width 0.3s ease;
 }
 
-.header-title-row {
+.sidebar:hover {
+    width: var(--sidebar-width-expanded);
+    align-items: flex-start;
+    /* Align text left when expanded */
+    padding-left: 20px;
+}
+
+.sidebar:hover .sidebar-logo {
+    margin-left: 10px;
+    /* Adjust logo position */
+}
+
+.sidebar:hover .nav-item {
+    width: 200px;
+    justify-content: flex-start;
+    padding-left: 12px;
+}
+
+.sidebar:hover .nav-item span {
+    margin-right: 15px;
+}
+
+.sidebar:hover .nav-item::after {
+    display: none;
+    /* Hide tooltips when expanded */
+}
+
+/* Add text labels for expanded state */
+.nav-item::before {
+    content: attr(data-title);
+    position: absolute;
+    left: 50px;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.sidebar:hover .nav-item::before {
+    opacity: 1;
+    position: static;
+    pointer-events: auto;
+}
+
+/* Logo Area */
+.sidebar-logo {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 40px;
+    box-shadow: var(--teal-glow);
+    color: #022c22;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+/* Sidebar Navigation */
+.nav-menu {
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    margin-bottom: 10px;
+    width: 100%;
+    align-items: center;
 }
 
-.church-logo-img {
-    height: 80px;
-    width: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--primary);
-    box-shadow: 0 0 20px var(--primary-glow);
+.nav-item {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid transparent;
 }
 
-h1 {
-    font-size: 3em;
+.nav-item:hover {
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+    color: var(--primary);
+    background: rgba(20, 184, 166, 0.1);
+    border: 1px solid rgba(20, 184, 166, 0.2);
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.15);
+}
+
+.nav-item span {
+    font-size: 24px;
+    /* Material Icons size */
+}
+
+/* Tooltip for Collapsed Sidebar */
+.nav-item::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 200;
+}
+
+.nav-item:hover::after {
+    opacity: 1;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: radial-gradient(circle at 50% -20%, rgba(20, 184, 166, 0.15), transparent 70%);
+}
+
+/* Header */
+.app-header {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    z-index: 50;
+}
+
+.page-title h1 {
+    font-size: 2rem;
     font-weight: 700;
-    margin: 0;
-    background: linear-gradient(to right, #ffffff, #ccfbf1);
+    letter-spacing: -0.5px;
+    background: linear-gradient(to right, #f0fdfa, #ccfbf1);
     -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: -1px;
+    -webkit-text-fill-color: transparent;
     text-shadow: 0 0 30px rgba(20, 184, 166, 0.3);
 }
 
-.subtitle {
-    color: var(--text-muted);
-    font-size: 1.1em;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-}
-
-/* --- Indicators --- */
-.sync-indicator {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 0.85em;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sync-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-    box-shadow: 0 0 10px currentColor;
-}
-
-.sync-indicator.synced {
-    color: #34d399;
-}
-
-/* Emerald 400 */
-.sync-indicator.syncing {
-    color: #60a5fa;
-}
-
-.sync-indicator.error {
-    color: #f87171;
-}
-
-.sync-indicator.offline {
-    color: #94a3b8;
-}
-
-/* --- User Info --- */
-.user-info {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), #0f766e);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.2em;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.user-name {
-    color: var(--text-main);
-    font-weight: 600;
-    font-size: 1em;
-}
-
-/* --- Tabs --- */
-.tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.tab-button {
+/* Scrollable Content */
+.content-scroll {
     flex: 1;
-    min-width: 140px;
-    max-width: 200px;
-    padding: 16px;
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    color: var(--text-muted);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 0.95em;
-    font-weight: 500;
-    /* Regular weight */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: 'Outfit', sans-serif;
+    overflow-y: auto;
+    padding: 40px;
+    padding-bottom: 100px;
+    /* Space for FAB */
 }
 
-.tab-button:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-main);
+/* Custom Scrollbar */
+.content-scroll::-webkit-scrollbar {
+    width: 6px;
 }
 
-.tab-button.active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #042f2e;
-    /* Dark text on bright button */
-    font-weight: 700;
-    box-shadow: 0 0 20px var(--primary-glow);
-    transform: translateY(-2px);
+.content-scroll::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-/* --- Cards & Content --- */
-.tab-content {
-    display: none;
-    animation: slideUp 0.4s ease-out;
+.content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(20, 184, 166, 0.2);
+    border-radius: 10px;
 }
 
-.tab-content.active {
-    display: block;
+.content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(20, 184, 166, 0.4);
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* --- Container Override --- */
+.container {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-/* --- Badges & Tags --- */
+/* --- Replaces Old Tabs CSS --- */
+.tabs,
+.tab-button {
+    display: none !important;
+}
+
+/* --- Glass Cards --- */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: rgba(20, 184, 166, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 20px rgba(20, 184, 166, 0.1);
+}
+
+/* --- Badges --- */
 .badge {
     position: relative;
     display: inline-block;
@@ -288,314 +329,156 @@ h1 {
     /* Prevents white edges from blur */
 }
 
-.badge-high {
-    background: rgba(239, 68, 68, 0.2);
-    color: #fca5a5;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+/* --- Helper Classes --- */
+.text-glow {
+    text-shadow: 0 0 10px rgba(20, 184, 166, 0.5);
 }
 
-.badge-medium {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fcd34d;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+.teal-glow {
+    box-shadow: var(--teal-glow);
 }
 
-.badge-low {
-    background: rgba(16, 185, 129, 0.2);
-    color: #6ee7b7;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+/* Ocultar elementos antiguos */
+header.old-header {
+    display: none;
 }
 
-.card {
-    /* More distinct card background - High Text Contrast */
-    background: rgba(4, 47, 46, 0.95);
-    background: linear-gradient(145deg, rgba(6, 78, 59, 0.95), rgba(4, 47, 46, 0.98));
-    backdrop-filter: blur(12px);
-    border-radius: var(--radius-lg);
-    padding: 30px;
-    margin-bottom: 24px;
-    /* White border as requested */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-.card h2 {
-    color: var(--primary);
-    margin-bottom: 24px;
-    font-size: 1.8em;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* --- Inputs --- */
-.input-group {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-
-input[type="text"],
-input[type="date"],
-input[type="time"],
-select,
-textarea {
-    flex: 1;
-    padding: 16px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(45, 212, 191, 0.2);
-    border-radius: var(--radius-sm);
-    color: var(--text-main);
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.05em;
-    transition: all 0.2s;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 0 2px var(--primary-glow);
-}
-
-/* --- Buttons --- */
-button {
-    padding: 14px 28px;
-    background: var(--primary);
-    color: #042f2e;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 700;
-    transition: all 0.3s;
-    font-family: 'Outfit', sans-serif;
-    box-shadow: 0 4px 15px var(--primary-glow);
-}
-
-button:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--primary-glow);
-}
-
-button.btn-success {
-    background: #10b981;
-    /* Emerald 500 */
-    color: white;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-button.btn-success:hover {
-    background: #059669;
-}
-
-button.btn-danger {
-    background: #ef4444;
-    /* Red 500 */
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-}
-
-button.btn-danger:hover {
-    background: #dc2626;
-}
-
-button.btn-small {
-    padding: 8px 16px;
-    font-size: 0.9em;
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-main);
-    box-shadow: none;
-}
-
-button.btn-small:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* --- Lists (Songs) --- */
-.song-list {
-    display: grid;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.song-item {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 20px;
-    border-radius: var(--radius-md);
-    border: 1px solid transparent;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-}
-
-.song-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: var(--primary);
-    transform: translateX(4px);
-}
-
-.song-name {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 4px;
-}
-
-.song-meta {
-    font-size: 0.95em;
-    color: var(--text-muted);
-}
-
-.song-meta a {
-    color: var(--primary);
-    text-decoration: none;
-    margin-right: 15px;
-    font-weight: 600;
-}
-
-.song-meta a:hover {
-    text-decoration: underline;
-}
-
-/* --- Stats --- */
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(4, 47, 46, 0.6) 100%);
-    padding: 30px;
-    border-radius: var(--radius-lg);
-    text-align: center;
-    border: 1px solid var(--surface-border);
-}
-
-.stat-number {
-    font-size: 3.5em;
-    font-weight: 700;
-    color: var(--primary);
-    text-shadow: 0 0 20px var(--primary-glow);
-    line-height: 1;
-    margin-bottom: 10px;
-}
-
-/* --- Selected Songs (Sunday/Rehearsal) --- */
-.selected-song {
-    background: linear-gradient(90deg, rgba(20, 184, 166, 0.1) 0%, rgba(20, 184, 166, 0.05) 100%);
-    padding: 16px 20px;
-    border-radius: var(--radius-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-left: 4px solid var(--primary);
-    margin-bottom: 10px;
-}
-
-/* --- Overlays --- */
+/* --- Overlays (Existing) --- */
 .role-selection-overlay,
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(2, 44, 34, 0.95);
-    backdrop-filter: blur(10px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.role-selection-overlay.active,
-.loading-overlay.active {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker backdrop */
+    backdrop-filter: blur(8px);
+    z-index: 2000;
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .role-selection-card {
-    background: linear-gradient(145deg, rgba(4, 47, 46, 0.95), rgba(2, 44, 34, 0.98));
-    /* White border */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 50px rgba(20, 184, 166, 0.3), inset 0 0 20px rgba(20, 184, 166, 0.1);
-    width: 90% !important;
-    max-width: 500px !important;
-    padding: 40px;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(0, 0, 0, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2.5rem;
     border-radius: var(--radius-lg);
     text-align: center;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* ... (Keep other existing overlay styles if needed, or rely on glass-card) ... */
+.role-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
 }
 
 .role-option {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .role-option:hover {
-    border-color: var(--primary);
     background: rgba(20, 184, 166, 0.1);
-}
-
-.role-option.selected {
-    background: rgba(20, 184, 166, 0.2);
     border-color: var(--primary);
+    transform: translateY(-3px);
 }
 
-/* --- Roles (Badges) --- */
-.role-badge {
-    border-radius: 50px;
-    padding: 6px 16px;
-    letter-spacing: 0.5px;
-}
-
-.role-lider {
-    background: rgba(217, 119, 6, 0.2);
-    color: #fbbf24;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-}
-
-.role-musico {
-    background: rgba(20, 184, 166, 0.2);
-    color: #5eead4;
-    border: 1px solid rgba(20, 184, 166, 0.3);
-}
-
-.role-invitado {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
-/* --- Mobile Responsiveness --- */
+/* Responsive */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2.2em;
-    }
-
-    .tabs {
+    body {
         flex-direction: column;
-        width: 100%;
+        /* Bottom nav? or Hamburger? Let's use Bottom Nav for Mobile */
     }
 
-    .tab-button {
-        width: 100%;
-        max-width: none;
-    }
-
-    .header-title-row {
+    .app-container {
         flex-direction: column;
-        text-align: center;
     }
 
-    .card {
+    .sidebar {
+        width: 100%;
+        height: 70px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+        position: fixed;
+        bottom: 0;
+        background: rgba(2, 44, 34, 0.95);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+    }
+
+    .sidebar:hover {
+        width: 100%;
+        /* Disable expansion on mobile */
+        padding-left: 0;
+    }
+
+    .sidebar-logo {
+        display: none;
+        /* Hide logo on bottom nav */
+    }
+
+    .nav-menu {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-around;
+        gap: 0;
+    }
+
+    .nav-item {
+        width: auto;
+        height: 100%;
+        flex: 1;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #94a3b8;
+    }
+
+    .nav-item.active {
+        color: var(--primary);
+    }
+
+    .nav-item span {
+        font-size: 24px;
+        margin-bottom: 2px;
+    }
+
+    /* Add labels for mobile */
+    .nav-item::before {
+        content: attr(data-title);
+        /* Use JS title */
+        position: static;
+        opacity: 1;
+        font-size: 10px;
+        pointer-events: auto;
+    }
+
+    .nav-item::after {
+        display: none;
+    }
+
+    .main-content {
+        height: calc(100vh - 70px);
+        /* Adjust for bottom nav */
+    }
+
+    .content-scroll {
         padding: 20px;
+        padding-bottom: 40px;
     }
 }

@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v12 LOADED - ALL NULL CRASHES FIXED ', 'background: #22c55e; color: #ffffff; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v13 LOADED - SUPER HARDENED ', 'background: #0ea5e9; color: #ffffff; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {
@@ -569,17 +569,25 @@ function renderUsersList() {
 }
 
 function updateUserUI() {
+    if (!currentUser) return;
+
     const initial = currentUser.name.charAt(0).toUpperCase();
-    document.getElementById('userAvatar').textContent = initial;
-    document.getElementById('userDisplayName').textContent = currentUser.name;
+
+    const avatarEl = document.getElementById('userAvatar');
+    if (avatarEl) avatarEl.textContent = initial;
+
+    const nameEl = document.getElementById('userDisplayName');
+    if (nameEl) nameEl.textContent = currentUser.name;
 
     const badge = document.getElementById('userRoleBadge');
-    if (currentUser.role === 'lider') {
-        badge.innerHTML = `<span class="role-badge role-lider">${appConfig.liderIcon} ${appConfig.liderName}</span>`;
-    } else if (currentUser.role === 'musico') {
-        badge.innerHTML = `<span class="role-badge role-musico">${appConfig.musicoIcon} ${appConfig.musicoName}</span>`;
-    } else {
-        badge.innerHTML = `<span class="role-badge role-invitado">${appConfig.invitadoIcon} ${appConfig.invitadoName}</span>`;
+    if (badge) {
+        if (currentUser.role === 'lider') {
+            badge.innerHTML = `<span class="role-badge role-lider">${appConfig.liderIcon} ${appConfig.liderName}</span>`;
+        } else if (currentUser.role === 'musico') {
+            badge.innerHTML = `<span class="role-badge role-musico">${appConfig.musicoIcon} ${appConfig.musicoName}</span>`;
+        } else {
+            badge.innerHTML = `<span class="role-badge role-invitado">${appConfig.invitadoIcon} ${appConfig.invitadoName}</span>`;
+        }
     }
 }
 

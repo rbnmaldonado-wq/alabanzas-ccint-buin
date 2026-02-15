@@ -47,13 +47,12 @@
 
 body {
     font-family: 'Outfit', sans-serif;
-    /* Reverted to Dark Gradient Background */
-    background-color: #020617;
+    /* Original Sanctuary Teal Background */
+    background-color: #022c22;
     background-image:
-        radial-gradient(ellipse at 50% -20%, rgba(120, 119, 198, 0.3), transparent 50%),
-        radial-gradient(circle at 0% 0%, rgba(45, 212, 191, 0.5), transparent 50%),
-        radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.4), transparent 50%),
-        conic-gradient(from 180deg at 50% 100%, rgba(2, 44, 34, 1) 0deg, transparent 60deg, transparent 300deg, rgba(2, 44, 34, 1) 360deg);
+        radial-gradient(at 0% 0%, rgba(19, 78, 74, 0.7) 0%, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(20, 184, 166, 0.5) 0%, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(15, 118, 110, 0.6) 0%, transparent 50%);
     background-attachment: fixed;
     color: var(--text-main);
     min-height: 100vh;
@@ -257,6 +256,7 @@ h1 {
 
 /* --- Badges & Tags --- */
 .badge {
+    position: relative;
     display: inline-block;
     padding: 4px 12px;
     border-radius: 50px;
@@ -266,10 +266,26 @@ h1 {
     letter-spacing: 0.5px;
     color: white;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    /* Aurora Image on Badges */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+    /* Contains the blur */
+    z-index: 1;
+}
+
+/* Blurred Aurora Background for Badges */
+.badge::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: url('https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1920&auto=format&fit=crop') no-repeat center center;
     background-size: cover;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    filter: blur(4px) brightness(0.9);
+    z-index: -1;
+    transform: scale(1.2);
+    /* Prevents white edges from blur */
 }
 
 .badge-high {

@@ -88,15 +88,38 @@ function gisLoaded() {
 function maybeEnableButtons() {
     if (gapiInited && gisInited && !accessToken) {
         document.getElementById('loadingOverlay').classList.add('active');
-        // Primero intentar obtener email con google.accounts.id
-        google.accounts.id.prompt((notification) => {
-            // Después de intentar el prompt, pedir el token OAuth
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                // Si no se muestra el prompt one-tap, iniciamos el flujo manual igual
+
+        // Timeout de seguridad: Si en 4 segundos no hemos entrado, mostramos botón manual
+        setTimeout(() => {
+            if (!accessToken) {
+                // Si el spinner sigue ahí, es que algo falló o se bloqueó
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) spinner.style.display = 'none';
+
+                const loadingText = document.getElementById('loadingText');
+                if (loadingText) loadingText.textContent = 'Acceso Requerido';
+
+                const subtext = document.getElementById('loadingSubtext');
+                if (subtext) subtext.style.display = 'none';
+
+                const manualContainer = document.getElementById('manualLoginContainer');
+                if (manualContainer) manualContainer.style.display = 'block';
             }
-            // Pequeño delay para UX
-            setTimeout(() => handleAuthClick(), 500);
-        });
+        }, 4000);
+
+        // Primero intentar obtener email con google.accounts.id
+        try {
+            google.accounts.id.prompt((notification) => {
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    console.log('OneTap skipped:', notification.getNotDisplayedReason());
+                }
+                // Pequeño delay e intentar flujo automático
+                setTimeout(() => handleAuthClick(), 1000);
+            });
+        } catch (e) {
+            console.error(e);
+            handleAuthClick();
+        }
     }
 }
 

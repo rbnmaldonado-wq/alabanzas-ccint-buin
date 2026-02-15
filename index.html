@@ -7,6 +7,9 @@
     <title>Gestor de Alabanzas - Iglesia</title>
 
     <!-- Estilos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 
     <!-- Scripts de la Aplicación (Orden Importante) -->
@@ -26,13 +29,13 @@
     <div id="churchSelectionOverlay" class="role-selection-overlay" style="z-index: 2000;">
         <div class="role-selection-card">
             <div style="font-size: 3em; margin-bottom: 15px;">🏛️</div>
-            <h2 style="color: #60a5fa; margin-bottom: 10px;">Configuración Inicial</h2>
-            <p style="color: #94a3b8; margin-bottom: 15px;">
+            <h2 style="color: #2dd4bf; margin-bottom: 10px;">Configuración Inicial</h2>
+            <p style="color: #99f6e4; margin-bottom: 15px;">
                 Para comenzar, necesitamos conectar con la base de datos de tu iglesia.
             </p>
 
             <div class="input-group" style="margin-bottom: 20px;">
-                <label style="display:block; text-align:left; color:#dbeafe; margin-bottom:8px;">ID de Google
+                <label style="display:block; text-align:left; color:#ccfbf1; margin-bottom:8px;">ID de Google
                     Sheet</label>
                 <input type="text" id="churchIdInput" placeholder="Ej: 1qBQRPiAomG1wVzIF4..."
                     style="width: 100%; text-align: center; font-size: 0.9em; padding: 12px; font-family: monospace;">
@@ -47,10 +50,10 @@
             </button>
 
             <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
-                <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 10px;">¿Eres nuevo? Crea tu base de datos en
+                <p style="color: #99f6e4; font-size: 0.9em; margin-bottom: 10px;">¿Eres nuevo? Crea tu base de datos en
                     1 click:</p>
                 <button id="createChurchBtn" onclick="validateAndSaveChurch('AUTO')"
-                    style="width: 100%; padding: 12px; font-size: 0.95em; background: #0f766e; border: 1px solid #115e59; color: white;">
+                    style="width: 100%; padding: 12px; font-size: 0.95em; background: #0f766e; background: #115e59; color: white;">
                     ✨ Crear Iglesia Automáticamente
                 </button>
                 <p style="font-size: 0.75em; color: #64748b; margin-top: 8px;">
@@ -69,11 +72,11 @@
     <div id="roleSelectionOverlay" class="role-selection-overlay">
         <div class="role-selection-card">
             <div style="font-size: 3em; margin-bottom: 15px;">🎵</div>
-            <h2 style="color: #60a5fa; margin-bottom: 10px;">¡Bienvenido al equipo!</h2>
-            <p style="color: #94a3b8; margin-bottom: 10px;">Es tu primera vez aquí. ¿Cuál es tu nombre?</p>
+            <h2 style="color: #2dd4bf; margin-bottom: 10px;">¡Bienvenido al equipo!</h2>
+            <p style="color: #99f6e4; margin-bottom: 10px;">Es tu primera vez aquí. ¿Cuál es tu nombre?</p>
             <input type="text" id="newUserName" placeholder="Tu nombre (ej: Juan Pérez)"
                 style="width: 100%; margin-bottom: 20px; text-align: center; font-size: 1.1em;">
-            <p style="color: #94a3b8; margin-bottom: 15px;">¿Cuál es tu rol en el equipo de alabanza?</p>
+            <p style="color: #99f6e4; margin-bottom: 15px;">¿Cuál es tu rol en el equipo de alabanza?</p>
 
             <div class="role-option" onclick="selectRole('lider')" id="roleOptLider">
                 <div class="role-option-title">👑 Líder de Alabanza</div>
@@ -91,7 +94,7 @@
             </div>
 
             <div id="roleWarning"
-                style="display:none; background: #7c2d12; border-radius: 8px; padding: 12px; margin: 15px 0; color: #fed7aa; font-size: 0.9em;">
+                style="display:none; background: #7c2d12; border-radius: 8px; padding: 12px; margin: 15px 0; color: #fdba74; font-size: 0.9em;">
                 ⚠️ Ya existe un Líder en el equipo. Solo puede haber uno. Por favor selecciona Músico.
             </div>
 
@@ -106,7 +109,7 @@
         <div class="loading-content">
             <div class="spinner"></div>
             <h2 id="loadingText">Iniciando sesión con Google...</h2>
-            <p style="color: #94a3b8; margin-top: 10px;">Por favor autoriza el acceso</p>
+            <p style="color: #99f6e4; margin-top: 10px;">Por favor autoriza el acceso</p>
         </div>
     </div>
 
@@ -197,14 +200,14 @@
                     </div>
                     <button onclick="setSundayDate()">Establecer Fecha</button>
                 </div>
-                <p id="currentSundayDisplay" style="margin-top: 15px; color: #60a5fa; font-size: 1.1em;"></p>
+                <p id="currentSundayDisplay" style="margin-top: 15px; color: #2dd4bf; font-size: 1.1em;"></p>
             </div>
 
             <div id="repetitionWarning"></div>
 
             <div class="card">
                 <h2>🎵 Seleccionar Alabanzas para este Domingo</h2>
-                <p style="margin-bottom: 15px; color: #94a3b8;">Selecciona 4-5 alabanzas para el servicio</p>
+                <p style="margin-bottom: 15px; color: #99f6e4;">Selecciona 4-5 alabanzas para el servicio</p>
                 <div class="input-group">
                     <select id="songSelector">
                         <option value="">Selecciona una alabanza...</option>
@@ -235,12 +238,12 @@
                     </div>
                     <button onclick="setRehearsalDate()">Establecer Fecha y Hora</button>
                 </div>
-                <p id="currentRehearsalDisplay" style="margin-top: 15px; color: #60a5fa; font-size: 1.1em;"></p>
+                <p id="currentRehearsalDisplay" style="margin-top: 15px; color: #2dd4bf; font-size: 1.1em;"></p>
             </div>
 
             <div class="card">
                 <h2>🎵 Alabanzas para Practicar</h2>
-                <p style="margin-bottom: 15px; color: #94a3b8;">Selecciona las alabanzas que practicarán en este ensayo
+                <p style="margin-bottom: 15px; color: #99f6e4;">Selecciona las alabanzas que practicarán en este ensayo
                 </p>
                 <div class="input-group">
                     <select id="rehearsalSongSelector">
@@ -334,10 +337,10 @@
                     <input type="text" id="configChurchName" placeholder="Ej: CCINT Buin, Iglesia Central...">
 
                     <div style="margin-top: 10px; font-size: 0.9em; display: flex; align-items: center; gap: 10px;">
-                        <span style="color: #94a3b8;">Base de datos conectada:</span>
+                        <span style="color: #99f6e4;">Base de datos conectada:</span>
                         <button
                             onclick="window.open(`https://docs.google.com/spreadsheets/d/${getSpreadsheetId()}`, '_blank')"
-                            style="background: #0f766e; padding: 4px 10px; border-radius: 4px; font-size: 0.9em; border: 1px solid #115e59;">
+                            style="background: #0f766e; padding: 4px 10px; border-radius: 4px; font-size: 0.9em; background: #115e59;">
                             📂 Abrir hoja de cálculo
                         </button>
                     </div>
@@ -360,7 +363,7 @@
                             <input type="file" id="logoFileInput" accept="image/*" style="display:none;"
                                 onchange="handleLogoUpload(event)">
                             <button onclick="document.getElementById('logoFileInput').click()"
-                                style="margin-bottom:8px; background:#1e40af; width:100%;">
+                                style="margin-bottom:8px; background: #0f766e; width:100%;">
                                 📁 Seleccionar imagen
                             </button>
                             <button onclick="removeLogo()"
@@ -379,11 +382,11 @@
 
                 <!-- ROL LÍDER -->
                 <div
-                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #7c3aed;">
+                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #d97706;">
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
                         <div id="previewLiderIcon" style="font-size:2em;">👑</div>
                         <div>
-                            <div style="font-weight:700; color:#dbeafe;" id="previewLiderName">Líder</div>
+                            <div style="font-weight:700; color:#ccfbf1;" id="previewLiderName">Líder</div>
                             <div style="font-size:0.85em; color:#94a3b8;">Acceso completo</div>
                         </div>
                     </div>
@@ -397,11 +400,11 @@
 
                 <!-- ROL MÚSICO -->
                 <div
-                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #0369a1;">
+                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #0d9488;">
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
                         <div id="previewMusicoIcon" style="font-size:2em;">🎸</div>
                         <div>
-                            <div style="font-weight:700; color:#dbeafe;" id="previewMusicoName">Músico</div>
+                            <div style="font-weight:700; color:#ccfbf1;" id="previewMusicoName">Músico</div>
                             <div style="font-size:0.85em; color:#94a3b8;">Puede sugerir canciones</div>
                         </div>
                     </div>
@@ -419,7 +422,7 @@
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
                         <div id="previewInvitadoIcon" style="font-size:2em;">🌱</div>
                         <div>
-                            <div style="font-weight:700; color:#dbeafe;" id="previewInvitadoName">Invitado</div>
+                            <div style="font-weight:700; color:#ccfbf1;" id="previewInvitadoName">Invitado</div>
                             <div style="font-size:0.85em; color:#94a3b8;">Solo lectura</div>
                         </div>
                     </div>
@@ -444,7 +447,7 @@
 
             <div class="card" style="border-left: 4px solid #f43f5e;">
                 <h2>⚠️ Zona de Peligro</h2>
-                <p style="color:#dbeafe; margin-bottom: 15px;">
+                <p style="color:#ccfbf1; margin-bottom: 15px;">
                     Si cambias de iglesia, se desconectará la hoja de cálculo actual.
                 </p>
                 <button onclick="switchChurch()"
@@ -452,7 +455,7 @@
                     🔄 Cambiar de Iglesia (Desconectar)
                 </button>
 
-                <p style="color:#dbeafe; margin-bottom: 15px; border-top: 1px solid #be123c; padding-top: 15px;">
+                <p style="color:#ccfbf1; margin-bottom: 15px; border-top: 1px solid #be123c; padding-top: 15px;">
                     Si el líder dejó el equipo o necesitas reiniciar los roles:
                 </p>
                 <button onclick="resetUsers()" style="width:100%; background: #7f1d1d; color: white;">

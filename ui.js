@@ -56,12 +56,12 @@ function renderSongs() {
                         Dificultad: ${song.difficulty}
                         ${hasLinks ? '<br>' : ''}
                         ${song.youtubeLink ? `<a href="${song.youtubeLink}" target="_blank" style="color: #ef4444;">▶️ YouTube</a>` : ''}
-                        ${song.pdfLink ? `<a href="${song.pdfLink}" target="_blank" style="color: #3b82f6;">📄 Ver PDF</a>` : ''}
+                        ${song.pdfLink ? `<a href="${song.pdfLink}" target="_blank" style="color: #2dd4bf;">📄 Ver PDF</a>` : ''}
                     </div>
                 </div>
                 <div class="song-actions">
                     ${song.youtubeLink ? `<button class="btn-small" style="background: #dc2626;" onclick="window.open('${song.youtubeLink}', '_blank')">▶️</button>` : ''}
-                    ${song.pdfLink ? `<button class="btn-small" style="background: #2563eb;" onclick="window.open('${song.pdfLink}', '_blank')">📄</button>` : ''}
+                    ${song.pdfLink ? `<button class="btn-small" style="background: #0f766e;" onclick="window.open('${song.pdfLink}', '_blank')">📄</button>` : ''}
                     ${adminButtons}
                 </div>
             </div>
@@ -100,7 +100,7 @@ function renderSundayList() {
             <div class="selected-song">
                 <div class="song-info">
                     <div class="song-name">${index + 1}. ${song.name}</div>
-                    <div class="song-meta" style="color: #bfdbfe;">${song.difficulty}</div>
+                    <div class="song-meta" style="color: #99f6e4;">${song.difficulty}</div>
                 </div>
                 <button class="btn-small btn-danger" onclick="removeFromSunday(${songId})">❌</button>
             </div>
@@ -178,7 +178,7 @@ function renderHistory() {
 
         const adminButtons = isLider() ? `
             <div class="history-actions">
-                <button class="btn-small" style="background:#1e40af;" onclick="editSundayPrompt(${sunday.id})" title="Editar">✏️</button>
+                <button class="btn-small" style="background:#0f766e;" onclick="editSundayPrompt(${sunday.id})" title="Editar">✏️</button>
                 <button class="btn-small btn-danger" onclick="deleteSunday(${sunday.id})" title="Eliminar">🗑️</button>
             </div>
         ` : '';
@@ -291,7 +291,7 @@ function renderRehearsalList() {
             <div class="selected-song">
                 <div class="song-info">
                     <div class="song-name">${index + 1}. ${song.name}</div>
-                    <div class="song-meta" style="color: #bfdbfe;">${song.difficulty}</div>
+                    <div class="song-meta" style="color: #99f6e4;">${song.difficulty}</div>
                 </div>
                 <button class="btn-small btn-danger" onclick="removeFromRehearsal(${songId})">❌</button>
             </div>
@@ -338,7 +338,7 @@ function renderRehearsalHistory() {
         });
         const adminButtons = isLider() ? `
             <div class="history-actions">
-                <button class="btn-small" style="background:#1e40af;" onclick="editRehearsalPrompt(${rehearsal.id})" title="Editar">✏️</button>
+                <button class="btn-small" style="background:#0f766e;" onclick="editRehearsalPrompt(${rehearsal.id})" title="Editar">✏️</button>
                 <button class="btn-small btn-danger" onclick="deleteRehearsal(${rehearsal.id})" title="Eliminar">🗑️</button>
             </div>
         ` : '';
@@ -362,8 +362,8 @@ function renderRehearsalHistory() {
     }
 
     if (past.length > 0) {
-        html += '<h3 style="color: #60a5fa; margin: 20px 0 15px 0;">📜 Ensayos Anteriores</h3>';
-        html += past.slice(0, 5).map(r => renderRehearsalItem(r, '#3b82f6')).join('');
+        html += '<h3 style="color: #2dd4bf; margin: 20px 0 15px 0;">📜 Ensayos Anteriores</h3>';
+        html += past.slice(0, 5).map(r => renderRehearsalItem(r, '#0f766e')).join('');
     }
 
     container.innerHTML = html;

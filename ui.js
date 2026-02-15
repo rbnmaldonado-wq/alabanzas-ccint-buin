@@ -120,8 +120,11 @@ function renderSongs() {
 }
 
 function updateStats() {
-    document.getElementById('totalSongs').textContent = songs.length;
-    document.getElementById('totalSundays').textContent = sundays.length;
+    const totalSongsEl = document.getElementById('totalSongs');
+    const totalSundaysEl = document.getElementById('totalSundays');
+
+    if (totalSongsEl) totalSongsEl.textContent = songs.length;
+    if (totalSundaysEl) totalSundaysEl.textContent = sundays.length;
 }
 
 function updateSongSelector() {

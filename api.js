@@ -45,6 +45,11 @@ async function readSheet(range) {
         return response.result.values || [];
     } catch (error) {
         console.error('Error leyendo:', error);
+        if (error.result && (error.result.error.code === 401 || error.result.error.code === 403)) {
+            console.warn('Token expirado o inválido. Cerrando sesión...');
+            localStorage.removeItem('gapi_token');
+            location.reload();
+        }
         return [];
     }
 }

@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v13 LOADED - SUPER HARDENED ', 'background: #0ea5e9; color: #ffffff; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v14 LOADED - LOGO FIX APPLIED ', 'background: #7c3aed; color: #ffffff; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {
@@ -481,11 +481,12 @@ function updateLogoPreview(src) {
 function updateHeaderLogo(src) {
     const wrapper = document.getElementById('churchLogoWrapper');
     const logoImg = document.getElementById('churchLogo');
+
     if (src) {
-        logoImg.src = src;
-        wrapper.style.display = 'block';
+        if (logoImg) logoImg.src = src;
+        if (wrapper) wrapper.style.display = 'block';
     } else {
-        wrapper.style.display = 'none';
+        if (wrapper) wrapper.style.display = 'none';
     }
 }
 

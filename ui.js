@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v15 LOADED - HTML FIXED + LOGO ADDED ', 'background: #ec4899; color: #ffffff; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v16 LOADED - CONFIG PREVIEW FIX APPLIED ', 'background: #f59e0b; color: #000000; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {
@@ -514,12 +514,23 @@ function applyConfigToUI() {
     if (invitadoOpt) invitadoOpt.textContent = `${appConfig.invitadoIcon} ${appConfig.invitadoName} `;
 
     // Previsualizaciones en config
-    document.getElementById('previewLiderIcon').textContent = appConfig.liderIcon;
-    document.getElementById('previewLiderName').textContent = appConfig.liderName;
-    document.getElementById('previewMusicoIcon').textContent = appConfig.musicoIcon;
-    document.getElementById('previewMusicoName').textContent = appConfig.musicoName;
-    document.getElementById('previewInvitadoIcon').textContent = appConfig.invitadoIcon;
-    document.getElementById('previewInvitadoName').textContent = appConfig.invitadoName;
+    const pLiderIcon = document.getElementById('previewLiderIcon');
+    if (pLiderIcon) pLiderIcon.textContent = appConfig.liderIcon;
+
+    const pLiderName = document.getElementById('previewLiderName');
+    if (pLiderName) pLiderName.textContent = appConfig.liderName;
+
+    const pMusicoIcon = document.getElementById('previewMusicoIcon');
+    if (pMusicoIcon) pMusicoIcon.textContent = appConfig.musicoIcon;
+
+    const pMusicoName = document.getElementById('previewMusicoName');
+    if (pMusicoName) pMusicoName.textContent = appConfig.musicoName;
+
+    const pInvitadoIcon = document.getElementById('previewInvitadoIcon');
+    if (pInvitadoIcon) pInvitadoIcon.textContent = appConfig.invitadoIcon;
+
+    const pInvitadoName = document.getElementById('previewInvitadoName');
+    if (pInvitadoName) pInvitadoName.textContent = appConfig.invitadoName;
 }
 
 function loadConfigForm() {

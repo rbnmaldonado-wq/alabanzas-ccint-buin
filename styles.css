@@ -47,7 +47,12 @@
 
 body {
     font-family: 'Outfit', sans-serif;
-    background: radial-gradient(circle at top center, var(--bg-gradient-start), var(--bg-gradient-end));
+    /* Aurora Borealis Effect */
+    background-color: #022c22;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(19, 78, 74, 0.7) 0%, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(20, 184, 166, 0.5) 0%, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(15, 118, 110, 0.6) 0%, transparent 50%);
     background-attachment: fixed;
     color: var(--text-main);
     min-height: 100vh;
@@ -250,13 +255,15 @@ h1 {
 }
 
 .card {
-    background: var(--surface);
+    /* More distinct card background */
+    background: rgba(19, 78, 74, 0.85);
+    background: linear-gradient(145deg, rgba(19, 78, 74, 0.9), rgba(6, 78, 59, 0.95));
     backdrop-filter: blur(12px);
     border-radius: var(--radius-lg);
     padding: 30px;
     margin-bottom: 24px;
-    border: 1px solid var(--surface-border);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .card h2 {
@@ -463,9 +470,9 @@ button.btn-small:hover {
 }
 
 .role-selection-card {
-    background: #042f2e;
+    background: linear-gradient(145deg, rgba(4, 47, 46, 0.95), rgba(2, 44, 34, 0.98));
     border: 1px solid var(--primary);
-    box-shadow: 0 0 50px rgba(20, 184, 166, 0.2);
+    box-shadow: 0 0 50px rgba(20, 184, 166, 0.3), inset 0 0 20px rgba(20, 184, 166, 0.1);
     width: 90% !important;
     max-width: 500px !important;
     padding: 40px;

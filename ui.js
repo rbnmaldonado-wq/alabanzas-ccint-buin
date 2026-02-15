@@ -1,5 +1,5 @@
 // Funciones de UI
-console.log('%c UI.JS v14 LOADED - LOGO FIX APPLIED ', 'background: #7c3aed; color: #ffffff; font-weight: bold; padding: 4px;');
+console.log('%c UI.JS v15 LOADED - HTML FIXED + LOGO ADDED ', 'background: #ec4899; color: #ffffff; font-weight: bold; padding: 4px;');
 
 // Inicializar Navegación Lateral
 document.addEventListener('DOMContentLoaded', () => {

@@ -16,7 +16,7 @@
 
     <!-- Scripts de la Aplicación (Orden Importante) -->
     <script src="config.js?v=6"></script>
-    <script src="ui.js?v=14"></script>
+    <script src="ui.js?v=15"></script>
     <script src="api.js?v=6"></script>
     <script src="auth.js?v=9"></script>
     <script src="app.js?v=6"></script>
@@ -199,6 +199,10 @@
                     <h1 id="pageTitle">Repertorio</h1>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
+                    <!-- Logo dinámico -->
+                    <div id="churchLogoWrapper" style="display:none; margin-right: 15px;">
+                        <img id="churchLogo" src="" alt="Logo Iglesia" style="height: 40px; border-radius: 5px;">
+                    </div>
                     <div id="userInfoDisplay" style="font-size: 0.9em; color: var(--text-muted);"></div>
                 </div>
             </header>

@@ -54,29 +54,42 @@ async function initializeGapiClient() {
     maybeEnableButtons();
 }
 
+// Función que maneja la respuesta del botón HTML de Google (Data API)
+window.handleCredentialResponse = function (credentialResponse) {
+    try {
+        const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
+        userEmail = payload.email || '';
+        userFullName = payload.name || payload.email || '';
+
+        // Guardar info básica
+        localStorage.setItem('user_email', userEmail);
+        localStorage.setItem('user_name', userFullName);
+
+        console.log("Usuario autenticado via GIS Button/OneTap:", userEmail);
+
+        // Si tenemos token de Drive (restaurado), procedemos. 
+        // Si no, tal vez necesitemos pedirlo, pero por ahora el botón de "Sign in with Google" da ID.
+        // Lo ideal es desencadenar la autorización de Drive si falta.
+        if (!accessToken) {
+            handleAuthClick(); // Pedir permisos de Drive/Sheets
+        }
+    } catch (e) {
+        console.error("Error decodificando credencial GIS:", e);
+    }
+};
+
 function gisLoaded() {
     // Inicializar Google Identity para capturar email
     google.accounts.id.initialize({
         client_id: CLIENT_ID,
-        callback: (credentialResponse) => {
-            // Decodificar el JWT para obtener email y nombre
-            try {
-                const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
-                userEmail = payload.email || '';
-                userFullName = payload.name || payload.email || '';
-
-                // Guardar info básica
-                localStorage.setItem('user_email', userEmail);
-                localStorage.setItem('user_name', userFullName);
-            } catch (e) { }
-        },
+        callback: window.handleCredentialResponse, // Usar la función global
         auto_select: true,
     });
 
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,
-        callback: '', // Se define dinámicamente en handleAuthClick
+        callback: (resp) => { console.log("Token callback default", resp); }, // Placeholder válido
         prompt: 'select_account',
     });
     gisInited = true;

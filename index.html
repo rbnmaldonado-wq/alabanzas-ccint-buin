@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Material Icons for Sidebar -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=11">
+    <link rel="stylesheet" href="styles.css?v=12">
 
     <!-- Scripts de la Aplicación (Orden Importante) -->
     <script src="config.js"></script>
@@ -107,6 +107,7 @@
         </div>
     </div>
 
+    <!-- PANTALLA DE CARGA (Overlay) -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -115,358 +116,244 @@
         </div>
     </div>
 
-    <div class="container" id="mainContent" style="display: none;">
-        <header>
-            <div class="user-info" id="userInfo">
-                <div class="user-avatar" id="userAvatar">?</div>
-                <div>
-                    <div class="user-name" id="userDisplayName">Cargando...</div>
-                    <div id="userRoleBadge"></div>
-                </div>
+    <!-- App Container -->
+    <div class="app-container">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="material-icons-round">temple_hindu</span>
             </div>
 
-            <div class="header-center">
-                <div class="header-title-row">
-                    <div id="churchLogoWrapper" style="display:none;">
-                        <img id="churchLogo" src="" alt="Logo Iglesia" class="church-logo-img">
-                    </div>
-                    <div>
-                        <h1>🎵 Gestor de Alabanzas</h1>
-                        <p class="subtitle">Sistema musical de Iglesia CCINT Buin - SINCRONIZADO</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="syncIndicator" class="sync-indicator offline">
-                <span class="sync-dot"></span>
-                <span id="syncText">No conectado</span>
-            </div>
-        </header>
-
-        <div class="tabs">
-            <button class="tab-button active" onclick="showTab('repertorio')">📚 Repertorio</button>
-            <button class="tab-button" id="tabDomingo" onclick="showTab('domingo')">🎤 Domingo Actual</button>
-            <button class="tab-button" id="tabEnsayosAdmin" onclick="showTab('ensayos')">📝 Ensayos</button>
-            <button class="tab-button" onclick="showTab('pendientes')">⏳ Pendientes</button>
-            <button class="tab-button" onclick="showTab('historial')">📅 Historial</button>
-            <button class="tab-button lider-only" id="tabConfig" onclick="showTab('configuracion')">⚙️
-                Configuración</button>
-        </div>
-
-        <!-- TAB: REPERTORIO -->
-        <div id="repertorio" class="tab-content active">
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalSongs">0</div>
-                    <div class="stat-label">Alabanzas en repertorio</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalSundays">0</div>
-                    <div class="stat-label">Domingos registrados</div>
-                </div>
-            </div>
-
-            <div class="card lider-only">
-                <h2>➕ Agregar Nueva Alabanza</h2>
-                <div class="input-group">
-                    <input type="text" id="songName" placeholder="Nombre de la alabanza">
-                    <select id="songDifficulty">
-                        <option value="">Nivel de dificultad</option>
-                        <option value="Fácil">Fácil</option>
-                        <option value="Media">Media</option>
-                        <option value="Difícil">Difícil</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <input type="text" id="songYouTube" placeholder="Link de YouTube (opcional)">
-                    <input type="text" id="songPDF"
-                        placeholder="Link del PDF con acordes (Google Drive, Dropbox, etc.)">
-                </div>
-                <button onclick="addSong()">Agregar</button>
-            </div>
-
-            <div class="card">
-                <h2>🎸 Todas las Alabanzas</h2>
-                <div id="songsList" class="song-list"></div>
-            </div>
-        </div>
-
-        <!-- TAB: DOMINGO ACTUAL -->
-        <div id="domingo" class="tab-content">
-            <div class="card">
-                <h2>📅 Seleccionar Fecha del Domingo</h2>
-                <div class="input-group">
-                    <div class="date-picker-wrapper">
-                        <span class="date-icon">📅</span>
-                        <input type="date" id="sundayDate">
-                    </div>
-                    <button onclick="setSundayDate()">Establecer Fecha</button>
-                </div>
-                <p id="currentSundayDisplay" style="margin-top: 15px; color: #2dd4bf; font-size: 1.1em;"></p>
-            </div>
-
-            <div id="repetitionWarning"></div>
-
-            <div class="card">
-                <h2>🎵 Seleccionar Alabanzas para este Domingo</h2>
-                <p style="margin-bottom: 15px; color: #99f6e4;">Selecciona 4-5 alabanzas para el servicio</p>
-                <div class="input-group">
-                    <select id="songSelector">
-                        <option value="">Selecciona una alabanza...</option>
-                    </select>
-                    <button onclick="addToSunday()">Agregar al Domingo</button>
+            <nav class="nav-menu">
+                <!-- Repertorio (Home/Library) -->
+                <div class="nav-item active" data-tab="repertorio" data-title="Repertorio">
+                    <span class="material-icons-round">library_music</span>
                 </div>
 
-                <div id="sundayList" class="sunday-selector"></div>
-
-                <button onclick="saveSunday()" style="margin-top: 20px; width: 100%;" class="btn-success">
-                    💾 Guardar Domingo Completo
-                </button>
-            </div>
-        </div>
-
-        <!-- TAB: ENSAYOS -->
-        <div id="ensayos" class="tab-content">
-            <div class="card">
-                <h2>📝 Planificar Ensayo</h2>
-                <div class="input-group">
-                    <div class="date-picker-wrapper">
-                        <span class="date-icon">📅</span>
-                        <input type="date" id="rehearsalDate">
-                    </div>
-                    <div class="date-picker-wrapper">
-                        <span class="date-icon">⏰</span>
-                        <input type="time" id="rehearsalTime" value="19:00">
-                    </div>
-                    <button onclick="setRehearsalDate()">Establecer Fecha y Hora</button>
-                </div>
-                <p id="currentRehearsalDisplay" style="margin-top: 15px; color: #2dd4bf; font-size: 1.1em;"></p>
-            </div>
-
-            <div class="card">
-                <h2>🎵 Alabanzas para Practicar</h2>
-                <p style="margin-bottom: 15px; color: #99f6e4;">Selecciona las alabanzas que practicarán en este ensayo
-                </p>
-                <div class="input-group">
-                    <select id="rehearsalSongSelector">
-                        <option value="">Selecciona una alabanza...</option>
-                    </select>
-                    <button onclick="addToRehearsal()">Agregar al Ensayo</button>
+                <!-- Domingo Actual (Services) -->
+                <div class="nav-item" data-tab="domingo" data-title="Domingo Actual">
+                    <span class="material-icons-round">event_available</span>
                 </div>
 
-                <div id="rehearsalList" class="sunday-selector"></div>
-
-                <div class="input-group" style="margin-top: 20px;">
-                    <textarea id="rehearsalNotes"
-                        placeholder="Notas del ensayo (ej: enfocarse en el puente, practicar cambios de tempo, etc.)"
-                        style="width: 100%; min-height: 80px; padding: 12px; background: #0f172a; border: 2px solid #334155; 
-                                     border-radius: 8px; color: #e2e8f0; font-family: inherit; resize: vertical;"></textarea>
+                <!-- Ensayos (Rehearsals) -->
+                <div class="nav-item" data-tab="ensayos" data-title="Ensayos">
+                    <span class="material-icons-round">groups</span>
                 </div>
 
-                <button onclick="saveRehearsal()" style="margin-top: 20px; width: 100%;" class="btn-success">
-                    💾 Guardar Ensayo
-                </button>
-            </div>
-
-            <div class="card">
-                <h2>📋 Próximos Ensayos y Historial</h2>
-                <div id="rehearsalHistoryList"></div>
-            </div>
-        </div>
-
-        <!-- TAB: PENDIENTES -->
-        <div id="pendientes" class="tab-content">
-
-            <div id="invitadoPendientesMsg" style="display:none;" class="card" style="text-align:center;">
-                <div style="font-size:2em; margin-bottom:10px;">🌱</div>
-                <p style="color:#94a3b8;">Como <strong>Invitado</strong> puedes ver las alabanzas sugeridas, pero no
-                    puedes agregar sugerencias. Habla con el Líder para cambiar tu rol a Músico.</p>
-            </div>
-
-            <div class="card musico-only">
-                <h2>⏳ Sugerir Nueva Alabanza para Aprender</h2>
-                <div class="input-group">
-                    <input type="text" id="pendingSongName" placeholder="Nombre de la alabanza">
-                    <input type="text" id="suggestedBy" placeholder="Tu nombre (opcional)">
-                    <select id="pendingPriority">
-                        <option value="">Prioridad</option>
-                        <option value="Alta">Alta - La necesitamos pronto</option>
-                        <option value="Media">Media - Cuando podamos</option>
-                        <option value="Baja">Baja - Sin apuro</option>
-                    </select>
-                    <button onclick="addPendingSong()">📝 Sugerir</button>
+                <!-- Pendientes (Pending) -->
+                <div class="nav-item" data-tab="pendientes" data-title="Pendientes">
+                    <span class="material-icons-round">hourglass_empty</span>
                 </div>
-                <div class="input-group">
-                    <textarea id="pendingNotes"
-                        placeholder="Notas adicionales (¿Por qué esta alabanza? ¿Link de YouTube?)"
-                        style="width: 100%; min-height: 80px; padding: 12px; background: #0f172a; border: 2px solid #334155; 
-                                     border-radius: 8px; color: #e2e8f0; font-family: inherit; resize: vertical;"></textarea>
+
+                <!-- Historial (History) -->
+                <div class="nav-item" data-tab="historial" data-title="Historial">
+                    <span class="material-icons-round">history</span>
+                </div>
+            </nav>
+
+            <div class="mt-auto"
+                style="margin-top: auto; width: 100%; display: flex; justify-content: center; padding-bottom: 20px;">
+                <!-- Configuración (Settings) -->
+                <div class="nav-item" data-tab="configuracion" data-title="Configuración">
+                    <span class="material-icons-round">settings</span>
                 </div>
             </div>
+        </aside>
 
-            <div class="card">
-                <h2>🎵 Alabanzas Pendientes por Aprender</h2>
-                <div id="pendingSongsList" class="song-list"></div>
-            </div>
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent" style="display:none;"> <!-- Oculto por defecto hasta login -->
+            <!-- Header -->
+            <header class="app-header">
+                <div class="page-title">
+                    <h1 id="pageTitle">Repertorio</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="userInfoDisplay" style="font-size: 0.9em; color: var(--text-muted);"></div>
+                </div>
+            </header>
 
-            <div class="card">
-                <h2>✅ Alabanzas Aprendidas (Movidas al Repertorio)</h2>
-                <div id="learnedSongsList" class="song-list"></div>
-            </div>
+            <!-- Scrollable Content -->
+            <div class="content-scroll">
 
+                <!-- VISTAS / CONTENIDO -->
 
-        </div>
-
-        <!-- TAB: HISTORIAL -->
-        <div id="historial" class="tab-content">
-            <div class="card">
-                <h2>📜 Historial de Domingos (Últimas 4 semanas)</h2>
-                <div id="historyList"></div>
-            </div>
-        </div>
-
-        <!-- TAB: CONFIGURACIÓN (solo Líder) -->
-        <div id="configuracion" class="tab-content">
-
-            <div class="card">
-                <h2>⚙️ Configuración General</h2>
-                <p style="color:#94a3b8; margin-bottom: 20px;">Personaliza la app para que hable el idioma de tu
-                    congregación.</p>
-
-                <div style="margin-bottom: 20px;">
-                    <label style="display:block; color:#60a5fa; font-weight:700; margin-bottom:8px;">🏛️ Nombre de la
-                        Iglesia</label>
-                    <input type="text" id="configChurchName" placeholder="Ej: CCINT Buin, Iglesia Central...">
-
-                    <div style="margin-top: 10px; font-size: 0.9em; display: flex; align-items: center; gap: 10px;">
-                        <span style="color: #99f6e4;">Base de datos conectada:</span>
-                        <button
-                            onclick="window.open(`https://docs.google.com/spreadsheets/d/${getSpreadsheetId()}`, '_blank')"
-                            style="background: #0f766e; padding: 4px 10px; border-radius: 4px; font-size: 0.9em; background: #115e59;">
-                            📂 Abrir hoja de cálculo
+                <!-- VISTA REPERTORIO -->
+                <div id="repertorioTab" class="tab-content active">
+                    <div class="action-bar" style="margin-bottom: 20px;">
+                        <input type="text" id="searchInput" placeholder="Buscar alabanza..." class="search-input"
+                            onkeyup="filterSongs()">
+                        <button id="addSongBtn" class="btn-primary" onclick="showAddSongModal()" style="display: none;">
+                            <i class="fas fa-plus"></i> Nueva
                         </button>
                     </div>
-                </div>
-
-                <div style="margin-bottom: 20px;">
-                    <label style="display:block; color:#60a5fa; font-weight:700; margin-bottom:8px;">🖼️ Logo de la
-                        Iglesia</label>
-                    <p style="color:#94a3b8; font-size:0.9em; margin-bottom:12px;">Imagen pequeña (PNG o JPG
-                        recomendado, máx. 200KB). Se muestra circular en el banner.</p>
-                    <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
-                        <div id="logoPreviewWrapper" style="width:64px; height:64px; border-radius:50%; border:2px dashed #334155;
-                                                            background:#0f172a; display:flex; align-items:center; justify-content:center;
-                                                            overflow:hidden; flex-shrink:0;">
-                            <img id="logoPreviewImg" src="" alt=""
-                                style="display:none; width:100%; height:100%; object-fit:cover;">
-                            <span id="logoPreviewPlaceholder" style="font-size:1.8em;">🏛️</span>
-                        </div>
-                        <div style="flex:1;">
-                            <input type="file" id="logoFileInput" accept="image/*" style="display:none;"
-                                onchange="handleLogoUpload(event)">
-                            <button onclick="document.getElementById('logoFileInput').click()"
-                                style="margin-bottom:8px; background: #0f766e; width:100%;">
-                                📁 Seleccionar imagen
-                            </button>
-                            <button onclick="removeLogo()"
-                                style="background:#7f1d1d; width:100%; font-size:0.9em; padding:8px;">
-                                🗑️ Quitar logo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>🎭 Nombres y Íconos de Roles</h2>
-                <p style="color:#94a3b8; margin-bottom: 20px;">Cambia cómo se llama cada rol para que suene natural en
-                    tu ministerio.</p>
-
-                <!-- ROL LÍDER -->
-                <div
-                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #d97706;">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                        <div id="previewLiderIcon" style="font-size:2em;">👑</div>
-                        <div>
-                            <div style="font-weight:700; color:#ccfbf1;" id="previewLiderName">Líder</div>
-                            <div style="font-size:0.85em; color:#94a3b8;">Acceso completo</div>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="configLiderIcon" placeholder="Ícono (ej: 👑 🎯 🌟 ✝️)" maxlength="4"
-                            style="max-width:100px; text-align:center; font-size:1.5em;">
-                        <input type="text" id="configLiderName"
-                            placeholder="Nombre del rol (ej: Director, Pastor de Adoración)">
+                    <div id="songList" class="song-grid">
+                        <!-- Se llena con JS -->
                     </div>
                 </div>
 
-                <!-- ROL MÚSICO -->
-                <div
-                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:15px; border-left: 4px solid #0d9488;">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                        <div id="previewMusicoIcon" style="font-size:2em;">🎸</div>
-                        <div>
-                            <div style="font-weight:700; color:#ccfbf1;" id="previewMusicoName">Músico</div>
-                            <div style="font-size:0.85em; color:#94a3b8;">Puede sugerir canciones</div>
+                <!-- VISTA DOMINGO -->
+                <div id="domingoTab" class="tab-content">
+                    <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
+                        <h2 class="text-glow" style="margin-bottom: 15px;">Próximo Domingo</h2>
+
+                        <div id="sundayServiceInfo">
+                            <!-- Info del servicio -->
+                        </div>
+
+                        <div id="sundaySongList" class="song-list-simple">
+                            <!-- Lista de canciones del domingo -->
+                        </div>
+
+                        <div id="sundayAdminControls"
+                            style="margin-top: 20px; display:none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                            <h3 style="font-size: 1em; margin-bottom: 10px;">Gestión (Líder)</h3>
+                            <button onclick="clearSundayList()" class="btn-danger btn-small">Limpiar Lista</button>
+                            <button onclick="finalizeSunday()" class="btn-success btn-small"
+                                title="Mover al historial">Finalizar Domingo</button>
                         </div>
                     </div>
-                    <div class="input-group">
-                        <input type="text" id="configMusicoIcon" placeholder="Ícono (ej: 🎸 🎹 🎺 🎻)" maxlength="4"
-                            style="max-width:100px; text-align:center; font-size:1.5em;">
-                        <input type="text" id="configMusicoName"
-                            placeholder="Nombre del rol (ej: Músico, Siervo, Integrante)">
+
+                    <!-- Selector para agregar canciones al domingo -->
+                    <div id="sundaySelectorArea" style="display:none;" class="glass-card p-5">
+                        <h3>Agregar al Domingo</h3>
+                        <select id="sundaySongSelector"
+                            style="width: 100%; padding: 10px; margin: 10px 0; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                            <!-- Se llena con JS -->
+                        </select>
+                        <button onclick="addSongToSunday()" class="btn-primary" style="width: 100%;">Agregar</button>
                     </div>
                 </div>
 
-                <!-- ROL INVITADO -->
-                <div
-                    style="background:#0f172a; border-radius:12px; padding:20px; margin-bottom:20px; border-left: 4px solid #166534;">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-                        <div id="previewInvitadoIcon" style="font-size:2em;">🌱</div>
-                        <div>
-                            <div style="font-weight:700; color:#ccfbf1;" id="previewInvitadoName">Invitado</div>
-                            <div style="font-size:0.85em; color:#94a3b8;">Solo lectura</div>
+                <!-- VISTA ENSAYOS -->
+                <div id="ensayosTab" class="tab-content">
+                    <div class="glass-card" style="padding: 20px;">
+                        <h2 class="text-glow">Gestión de Ensayos</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 20px;">Confirma tu asistencia a los próximos
+                            ensayos.</p>
+
+                        <div id="rehearsalList">
+                            <!-- Lista de ensayos -->
                         </div>
                     </div>
-                    <div class="input-group">
-                        <input type="text" id="configInvitadoIcon" placeholder="Ícono (ej: 🌱 🕊️ 🙏 ✨)" maxlength="4"
-                            style="max-width:100px; text-align:center; font-size:1.5em;">
-                        <input type="text" id="configInvitadoName"
-                            placeholder="Nombre del rol (ej: Invitado, Músico Nuevo, Visitante)">
+
+                    <div id="rehearsalAdminPanel" style="display:none; margin-top: 20px;" class="glass-card p-5">
+                        <h3>Programar Nuevo Ensayo</h3>
+                        <input type="datetime-local" id="newRehearsalDate"
+                            style="width: 100%; padding: 10px; margin: 10px 0; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                        <button onclick="createRehearsal()" class="btn-primary" style="width: 100%;">Crear
+                            Ensayo</button>
                     </div>
                 </div>
 
-                <button onclick="saveConfig()" style="width:100%;" class="btn-success">
-                    💾 Guardar Configuración
-                </button>
-            </div>
+                <!-- VISTA PENDIENTES -->
+                <div id="pendientesTab" class="tab-content">
+                    <div class="glass-card" style="padding: 20px;">
+                        <h2 class="text-glow">Sugerencias y Pendientes</h2>
+                        <div id="pendingList" class="song-list"></div>
+                    </div>
+                    <div id="suggestionBox" style="margin-top: 20px;" class="glass-card p-5">
+                        <h3>Sugerir Alabanza</h3>
+                        <input type="text" id="suggestionInput" placeholder="Nombre de la alabanza..."
+                            style="width: 100%; padding: 10px; margin: 10px 0; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                        <button onclick="submitSuggestion()" class="btn-primary" style="width: 100%;">Sugerir</button>
+                    </div>
+                </div>
 
-            <div class="card">
-                <h2>👥 Miembros del Equipo</h2>
-                <p style="color:#94a3b8; margin-bottom: 15px;">Gestiona los músicos registrados en la app.</p>
-                <div id="usersList"></div>
-            </div>
+                <!-- VISTA HISTORIAL -->
+                <div id="historialTab" class="tab-content">
+                    <div class="glass-card" style="padding: 20px;">
+                        <h2 class="text-glow">Historial de Servicios</h2>
+                        <div id="historyList" style="margin-top: 15px;">
+                            <!-- Historial -->
+                        </div>
+                    </div>
+                </div>
 
-            <div class="card" style="border-left: 4px solid #f43f5e;">
-                <h2>⚠️ Zona de Peligro</h2>
-                <p style="color:#ccfbf1; margin-bottom: 15px;">
-                    Si cambias de iglesia, se desconectará la hoja de cálculo actual.
-                </p>
-                <button onclick="switchChurch()"
-                    style="width:100%; background: #be123c; color: white; margin-bottom: 15px;">
-                    🔄 Cambiar de Iglesia (Desconectar)
-                </button>
+                <!-- VISTA CONFIGURACIÓN -->
+                <div id="configuracionTab" class="tab-content">
+                    <div class="glass-card" style="padding: 20px;">
+                        <h2 class="text-glow">Configuración</h2>
 
-                <p style="color:#ccfbf1; margin-bottom: 15px; border-top: 1px solid #be123c; padding-top: 15px;">
-                    Si el líder dejó el equipo o necesitas reiniciar los roles:
-                </p>
-                <button onclick="resetUsers()" style="width:100%; background: #7f1d1d; color: white;">
-                    ☢️ Resetear Todos los Usuarios
-                </button>
-            </div>
+                        <div style="margin-top: 20px;">
+                            <h3>Mi Perfil</h3>
+                            <p id="configUserName" style="color: var(--text-muted);"></p>
+                            <p id="configUserRole" style="color: var(--primary); font-weight: bold;"></p>
+                        </div>
 
+                        <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                            <h3>Iglesia Conectada</h3>
+                            <p style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; word-break: break-all;"
+                                id="currentSpreadsheetId"></p>
+                            <button onclick="switchChurch()" class="btn-danger-outline"
+                                style="margin-top: 10px;">Desconectar / Cambiar Iglesia</button>
+                        </div>
+
+                        <div id="adminConfigPanel"
+                            style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                            <h3 style="color: var(--role-lider);">Panel de Líder</h3>
+                            <p style="font-size: 0.9em; color: var(--text-muted);">Gestión avanzada de miembros.</p>
+
+                            <div style="margin-top: 15px;">
+                                <button onclick="resetUsers()" class="btn-danger">⚠️ Resetear Miembros</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End Content Scroll -->
+        </main> <!-- End Main Content -->
+    </div> <!-- End App Container -->
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Mensaje</div>
+
+    <!-- Modal Agregar/Editar Canción -->
+    <div id="songModal" class="modal">
+        <div class="modal-content glass-card">
+            <span class="close" onclick="closeSongModal()">&times;</span>
+            <h2 id="modalTitle" class="text-glow">Nueva Alabanza</h2>
+            <form id="songForm">
+                <input type="hidden" id="songId">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="songName" required>
+                </div>
+                <!-- ... Otros campos del formulario ... -->
+                <!-- Simplificado para el ejemplo, se puede expandir según ui.js original -->
+                <div class="form-group">
+                    <label>Tonalidad</label>
+                    <input type="text" id="songKey">
+                </div>
+                <div class="form-group">
+                    <label>BPM</label>
+                    <input type="number" id="songBpm">
+                </div>
+                <div class="form-group">
+                    <label>Dificultad</label>
+                    <select id="songDifficulty">
+                        <option value="Baja">Baja</option>
+                        <option value="Media">Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link YouTube</label>
+                    <input type="url" id="songYoutube">
+                </div>
+                <div class="form-group">
+                    <label>Link PDF/Acordes</label>
+                    <input type="url" id="songPdf">
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeSongModal()">Cancelar</button>
+                    <button type="submit" class="btn-success">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
+
 </body>
 
 </html>

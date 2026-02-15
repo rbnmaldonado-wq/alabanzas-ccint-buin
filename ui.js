@@ -77,12 +77,17 @@ function renderSongs() {
         const hasLinks = song.youtubeLink || song.pdfLink;
         const adminButtons = isLider() ? `
             <button class="btn-small" onclick="editSong(${song.id})">✏️</button>
-            <button class="btn-small btn-danger" onclick="deleteSong(${song.id})">🗑️</button>
-        ` : '';
-        return `
+    const container = document.getElementById('songList');
+    if (!container) return;
+
+    if (songs.length === 0) {
+        container.innerHTML = '<div class="text-center p-10 text-gray-400">No hay canciones disponibles.</div>';
+        return;
+    }
+
     container.innerHTML = songs.map(song => {
         const hasLinks = song.youtubeLink || song.pdfLink;
-        // Determine difficulty color/badge
+        
         let difficultyBadge = '';
         if (song.difficulty === 'Baja') difficultyBadge = '<span class="badge badge-low">Baja</span>';
         else if (song.difficulty === 'Media') difficultyBadge = '<span class="badge badge-medium">Media</span>';
@@ -94,19 +99,32 @@ function renderSongs() {
         ` : '';
 
         return `
-            < div class="glass-card p-5 rounded-xl group cursor-pointer transition-all duration-300 hover:-translate-y-1" style = "margin-bottom: 20px; padding: 20px; border-radius: 12px; position: relative;" >
-                <div class="flex justify-between items-start mb-4" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                    <div class="p-2 bg-primary/20 rounded-lg" style="background: rgba(20, 184, 166, 0.1); padding: 8px; border-radius: 8px;">
-                        <span class="material-icons-round text-primary text-xl" style="color: var(--primary);">audiotrack</span>
+            < div class="glass-card song-card" style = "margin-bottom: 20px; padding: 20px; border-radius: 12px; position: relative; transition: all 0.3s ease;" >
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div style="background: rgba(20, 184, 166, 0.1); padding: 8px; border-radius: 8px;">
+                        <span class="material-icons-round" style="color: var(--primary);">audiotrack</span>
                     </div>
                     ${difficultyBadge}
                 </div>
                 
-                <h4 class="text-lg font-outfit font-bold mb-1 group-hover:text-primary transition-colors" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: white;">${song.name}</h4>
+                <h4 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: white;">${song.name}</h4>
                 
-                <div class="song-meta" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+                <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
                     ${song.artist ? song.artist : 'Artista Desconocido'}
                 </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: auto; align-items: center;">
+                    ${song.youtubeLink ? `<a href="${song.youtubeLink}" target="_blank" class="icon-btn" title="Ver en YouTube"><span class="material-icons-round">play_circle</span></a>` : ''}
+                    ${song.pdfLink ? `<a href="${song.pdfLink}" target="_blank" class="icon-btn" title="Ver Acordes"><span class="material-icons-round">description</span></a>` : ''}
+                    
+                    <div style="margin-left: auto; display: flex; gap: 5px;">
+                        ${adminButtons}
+                    </div>
+                </div>
+            </div >
+            `;
+    }).join('');
+}
 
                 <div class="flex items-center justify-between" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
                     <div class="flex gap-2" style="display: flex; gap: 10px;">
@@ -133,7 +151,7 @@ function updateStats() {
 function updateSongSelector() {
     const selector = document.getElementById('songSelector');
     selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `< option value = "${song.id}" > ${ song.name }</option > `).join('');
+        songs.map(song => `< option value = "${song.id}" > ${song.name}</option > `).join('');
     updateRehearsalSelector();
 }
 
@@ -358,7 +376,7 @@ function renderRehearsalList() {
 function updateRehearsalSelector() {
     const selector = document.getElementById('rehearsalSongSelector');
     selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `< option value = "${song.id}" > ${ song.name }</option > `).join('');
+        songs.map(song => `< option value = "${song.id}" > ${song.name}</option > `).join('');
 }
 
 function renderRehearsalHistory() {
@@ -404,7 +422,7 @@ function renderRehearsalHistory() {
                     <div class="history-date">📅 ${formatDate(rehearsal.date)} — ⏰ ${rehearsal.time}</div>
                     ${adminButtons}
                 </div>
-                ${ rehearsal.notes ? `<p style="color: #94a3b8; font-size:0.9em;">📝 ${rehearsal.notes}</p>` : '' }
+                ${rehearsal.notes ? `<p style="color: #94a3b8; font-size:0.9em;">📝 ${rehearsal.notes}</p>` : ''}
         <div class="history-songs">
             ${songNames.map(name => `<span class="history-song-tag">${name}</span>`).join('')}
         </div>
@@ -482,7 +500,7 @@ function updateHeaderLogo(src) {
 function applyConfigToUI() {
     // Subtítulo con nombre de iglesia
     document.querySelector('.subtitle').textContent =
-        `Sistema musical de ${ appConfig.churchName } - SINCRONIZADO`;
+        `Sistema musical de ${appConfig.churchName} - SINCRONIZADO`;
 
     // Logo en header
     updateHeaderLogo(appConfig.logoBase64 || '');
@@ -492,11 +510,11 @@ function applyConfigToUI() {
 
     // Opciones en pantalla de selección de rol
     document.querySelector('#roleOptLider .role-option-title').textContent =
-        `${ appConfig.liderIcon } ${ appConfig.liderName } `;
+        `${appConfig.liderIcon} ${appConfig.liderName} `;
     document.querySelector('#roleOptMusico .role-option-title').textContent =
-        `${ appConfig.musicoIcon } ${ appConfig.musicoName } `;
+        `${appConfig.musicoIcon} ${appConfig.musicoName} `;
     document.querySelector('#roleOptInvitado .role-option-title').textContent =
-        `${ appConfig.invitadoIcon } ${ appConfig.invitadoName } `;
+        `${appConfig.invitadoIcon} ${appConfig.invitadoName} `;
 
     // Previsualizaciones en config
     document.getElementById('previewLiderIcon').textContent = appConfig.liderIcon;
@@ -528,9 +546,9 @@ function renderUsersList() {
         return;
     }
     const roleLabel = (role) => {
-        if (role === 'lider') return `${ appConfig.liderIcon } ${ appConfig.liderName } `;
-        if (role === 'musico') return `${ appConfig.musicoIcon } ${ appConfig.musicoName } `;
-        return `${ appConfig.invitadoIcon } ${ appConfig.invitadoName } `;
+        if (role === 'lider') return `${appConfig.liderIcon} ${appConfig.liderName} `;
+        if (role === 'musico') return `${appConfig.musicoIcon} ${appConfig.musicoName} `;
+        return `${appConfig.invitadoIcon} ${appConfig.invitadoName} `;
     };
 
     container.innerHTML = users.map(u => `
@@ -561,11 +579,11 @@ function updateUserUI() {
 
     const badge = document.getElementById('userRoleBadge');
     if (currentUser.role === 'lider') {
-        badge.innerHTML = `< span class="role-badge role-lider" > ${ appConfig.liderIcon } ${ appConfig.liderName }</span > `;
+        badge.innerHTML = `< span class="role-badge role-lider" > ${appConfig.liderIcon} ${appConfig.liderName}</span > `;
     } else if (currentUser.role === 'musico') {
-        badge.innerHTML = `< span class="role-badge role-musico" > ${ appConfig.musicoIcon } ${ appConfig.musicoName }</span > `;
+        badge.innerHTML = `< span class="role-badge role-musico" > ${appConfig.musicoIcon} ${appConfig.musicoName}</span > `;
     } else {
-        badge.innerHTML = `< span class="role-badge role-invitado" > ${ appConfig.invitadoIcon } ${ appConfig.invitadoName }</span > `;
+        badge.innerHTML = `< span class="role-badge role-invitado" > ${appConfig.invitadoIcon} ${appConfig.invitadoName}</span > `;
     }
 }
 
@@ -619,7 +637,7 @@ function selectRole(role) {
     selectedRole = role;
     document.querySelectorAll('.role-option').forEach(el => el.classList.remove('selected'));
     const roleId = role.charAt(0).toUpperCase() + role.slice(1);
-    const el = document.getElementById(`roleOpt${ roleId } `);
+    const el = document.getElementById(`roleOpt${roleId} `);
     if (el) el.classList.add('selected');
 
     const nameVal = document.getElementById('newUserName').value.trim();

@@ -371,6 +371,9 @@ function updateRehearsalSelector() {
 function renderRehearsalHistory() {
     const container = document.getElementById('rehearsalHistoryList');
 
+    // Protección contra null (Fix v10)
+    if (!container) return;
+
     if (rehearsals.length === 0) {
         container.innerHTML = `
             <div class="empty-state">

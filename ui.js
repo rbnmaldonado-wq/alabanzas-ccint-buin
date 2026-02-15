@@ -253,7 +253,10 @@ function renderHistory() {
 }
 
 function renderPendingSongs() {
-    const container = document.getElementById('pendingSongsList');
+    // Corregido: El ID en HTML es 'pendingList'
+    const container = document.getElementById('pendingList') || document.getElementById('pendingSongsList');
+
+    if (!container) return;
 
     if (pendingSongs.length === 0) {
         container.innerHTML = `
@@ -303,6 +306,8 @@ function renderPendingSongs() {
 
 function renderLearnedSongs() {
     const container = document.getElementById('learnedSongsList');
+
+    if (!container) return;
 
     if (learnedSongs.length === 0) {
         container.innerHTML = `

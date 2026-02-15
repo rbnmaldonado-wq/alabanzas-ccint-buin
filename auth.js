@@ -68,10 +68,26 @@ window.handleCredentialResponse = function (credentialResponse) {
         console.log("Usuario autenticado via GIS Button/OneTap:", userEmail);
 
         // Si tenemos token de Drive (restaurado), procedemos. 
-        // Si no, tal vez necesitemos pedirlo, pero por ahora el botón de "Sign in with Google" da ID.
-        // Lo ideal es desencadenar la autorización de Drive si falta.
         if (!accessToken) {
-            handleAuthClick(); // Pedir permisos de Drive/Sheets
+            // NO llamar a handleAuthClick() automáticamente para evitar bloqueos de popup.
+            // En su lugar, actualizar la UI para pedir el click manual.
+            const loadingText = document.getElementById('loadingText');
+            if (loadingText) loadingText.textContent = `Hola, ${userFullName}`;
+
+            const loadingSubtext = document.getElementById('loadingSubtext');
+            if (loadingSubtext) loadingSubtext.textContent = 'Para continuar, necesitamos confirmar permisos de Google Drive.';
+
+            // Ocultar botón de Google (ya se logueó)
+            const googleBtn = document.getElementById('googleBtnContainer');
+            if (googleBtn) googleBtn.style.display = 'none';
+
+            // Mostrar botón de autorización manual
+            const manualContainer = document.getElementById('manualLoginContainer');
+            if (manualContainer) manualContainer.style.display = 'block';
+
+            // Actualizar texto del botón manual
+            const manualBtn = manualContainer.querySelector('button');
+            if (manualBtn) manualBtn.textContent = 'Autorizar Acceso a Datos 🔐';
         }
     } catch (e) {
         console.error("Error decodificando credencial GIS:", e);

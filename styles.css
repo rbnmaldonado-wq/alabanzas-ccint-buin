@@ -47,12 +47,14 @@
 
 body {
     font-family: 'Outfit', sans-serif;
-    /* Aurora Borealis Effect */
-    background-color: #022c22;
+    /* Aurora Borealis Effect - Softened */
+    background-color: #020617;
+    /* Deeper Slate/Teal base */
     background-image:
-        radial-gradient(at 0% 0%, rgba(19, 78, 74, 0.7) 0%, transparent 50%),
-        radial-gradient(at 50% 0%, rgba(20, 184, 166, 0.5) 0%, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(15, 118, 110, 0.6) 0%, transparent 50%);
+        radial-gradient(ellipse at top, rgba(20, 184, 166, 0.25), transparent 70%),
+        radial-gradient(circle at top left, rgba(4, 47, 46, 0.4), transparent 50%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.3), transparent 50%),
+        linear-gradient(to bottom, transparent, #022c22 90%);
     background-attachment: fixed;
     color: var(--text-main);
     min-height: 100vh;
@@ -255,15 +257,15 @@ h1 {
 }
 
 .card {
-    /* More distinct card background */
-    background: rgba(19, 78, 74, 0.85);
-    background: linear-gradient(145deg, rgba(19, 78, 74, 0.9), rgba(6, 78, 59, 0.95));
+    /* More distinct card background - High Text Contrast */
+    background: rgba(4, 47, 46, 0.95);
+    background: linear-gradient(145deg, rgba(6, 78, 59, 0.95), rgba(4, 47, 46, 0.98));
     backdrop-filter: blur(12px);
     border-radius: var(--radius-lg);
     padding: 30px;
     margin-bottom: 24px;
     border: 1px solid rgba(45, 212, 191, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .card h2 {

@@ -635,3 +635,28 @@ function switchChurch() {
         location.reload();
     }
 }
+
+async function resetUsers() {
+    const confirmation = prompt('⚠️ PELIGRO ⚠️\nEsto borrará a TODOS los usuarios (incluido tú) de la lista de miembros.\n\nEsto es útil si el Líder perdió el acceso y necesitan empezar de cero.\n\nEscribe "BORRAR" para confirmar:');
+
+    if (confirmation === 'BORRAR') {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Borrando...';
+        btn.disabled = true;
+
+        try {
+            // Borrar datos de Users!A2:D51 (dejando la config en F1 intacta)
+            const emptyRows = Array(50).fill(['', '', '', '']); // Borrar 50 usuarios
+            await writeSheet('Users!A2:D51', emptyRows);
+
+            alert('✅ Usuarios reseteados. La página se recargará para que puedas registrarte como nuevo Líder.');
+            location.reload();
+        } catch (error) {
+            console.error(error);
+            alert('❌ Error al resetear.');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    }
+}

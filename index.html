@@ -49,9 +49,10 @@
             <div style="margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
                 <p style="color: #94a3b8; font-size: 0.9em; margin-bottom: 10px;">¿No tienes una hoja de cálculo aún?
                 </p>
-                <button onclick="window.open('https://docs.google.com/spreadsheets/new', '_blank')"
-                    style="width: 100%; padding: 10px; font-size: 0.9em; background: #1e293b; border: 1px solid #334155;">
-                    📄 Crear nueva hoja de cálculo
+                <button
+                    onclick="window.open('https://docs.google.com/spreadsheets/d/1qBQRPiAomG1wVzIF4XmHMoDlPKXbVcrQKQD4JnXVdF0/copy', '_blank')"
+                    style="width: 100%; padding: 10px; font-size: 0.9em; background: #0f766e; border: 1px solid #115e59; color: white;">
+                    📑 Copiar Plantilla Oficial
                 </button>
             </div>
         </div>
@@ -306,8 +307,16 @@
                 <p style="color:#dbeafe; margin-bottom: 15px;">
                     Si cambias de iglesia, se desconectará la hoja de cálculo actual.
                 </p>
-                <button onclick="switchChurch()" style="width:100%; background: #be123c; color: white;">
+                <button onclick="switchChurch()"
+                    style="width:100%; background: #be123c; color: white; margin-bottom: 15px;">
                     🔄 Cambiar de Iglesia (Desconectar)
+                </button>
+
+                <p style="color:#dbeafe; margin-bottom: 15px; border-top: 1px solid #be123c; padding-top: 15px;">
+                    Si el líder dejó el equipo o necesitas reiniciar los roles:
+                </p>
+                <button onclick="resetUsers()" style="width:100%; background: #7f1d1d; color: white;">
+                    ☢️ Resetear Todos los Usuarios
                 </button>
             </div>
         </div>

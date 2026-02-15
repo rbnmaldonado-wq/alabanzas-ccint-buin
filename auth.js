@@ -19,6 +19,38 @@ async function initializeGapiClient() {
         ],
     });
     gapiInited = true;
+
+    // Intentar restaurar sesión
+    const storedToken = localStorage.getItem('gapi_token');
+    if (storedToken) {
+        const token = JSON.parse(storedToken);
+        // Verificar expiración (rudimentario, mejor dejar que gapi maneje errores 401 si expiró)
+        gapi.client.setToken(token);
+        accessToken = token;
+
+        // Restaurar estado de usuario
+        userEmail = localStorage.getItem('user_email') || '';
+        userFullName = localStorage.getItem('user_name') || '';
+
+        if (userEmail) {
+            currentUser.email = userEmail;
+            currentUser.name = userFullName;
+            console.log('Sesión restaurada para:', userEmail);
+
+            // Ocultar login y cargar app directamente
+            document.getElementById('loadingOverlay').classList.remove('active');
+
+            // Iniciar carga de datos
+            if (window.loadAllData) {
+                const hasConfig = await checkChurchConfig();
+                if (hasConfig) await window.loadAllData();
+            }
+            await checkUserRole();
+            document.getElementById('mainContent').style.display = 'block';
+            return; // Salir, no mostrar botones de login
+        }
+    }
+
     maybeEnableButtons();
 }
 
@@ -32,6 +64,10 @@ function gisLoaded() {
                 const payload = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
                 userEmail = payload.email || '';
                 userFullName = payload.name || payload.email || '';
+
+                // Guardar info básica
+                localStorage.setItem('user_email', userEmail);
+                localStorage.setItem('user_name', userFullName);
             } catch (e) { }
         },
         auto_select: true,
@@ -44,11 +80,13 @@ function gisLoaded() {
         prompt: 'select_account',
     });
     gisInited = true;
-    maybeEnableButtons();
+
+    // Solo llamar si no restauramos sesión en gapiLoaded
+    if (!accessToken) maybeEnableButtons();
 }
 
 function maybeEnableButtons() {
-    if (gapiInited && gisInited) {
+    if (gapiInited && gisInited && !accessToken) {
         document.getElementById('loadingOverlay').classList.add('active');
         // Primero intentar obtener email con google.accounts.id
         google.accounts.id.prompt((notification) => {
@@ -67,6 +105,9 @@ function handleAuthClick() {
         if (resp.error !== undefined) throw (resp);
         accessToken = gapi.client.getToken();
 
+        // GUARDAR TOKEN
+        localStorage.setItem('gapi_token', JSON.stringify(accessToken));
+
         // Si ya tenemos email del ID callback, usarlo
         // Si no, usar el hint del token
         if (!userEmail && accessToken.login_hint) {
@@ -75,6 +116,10 @@ function handleAuthClick() {
         if (!userFullName && userEmail) {
             userFullName = userEmail.split('@')[0];
         }
+
+        // Guardar datos de usuario
+        localStorage.setItem('user_email', userEmail);
+        localStorage.setItem('user_name', userFullName);
 
         currentUser.email = userEmail;
         currentUser.name = userFullName;

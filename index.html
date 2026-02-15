@@ -18,7 +18,7 @@
     <script src="config.js?v=6"></script>
     <script src="ui.js?v=7"></script>
     <script src="api.js?v=6"></script>
-    <script src="auth.js?v=7"></script>
+    <script src="auth.js?v=8"></script>
     <script src="app.js?v=6"></script>
 
     <!-- Scripts de Google (Cargan al final y llaman a funciones definidas en auth.js) -->
@@ -117,15 +117,9 @@
 
             <div id="manualLoginContainer" style="display:none; margin-top: 20px;">
                 <p style="margin-bottom: 15px; color: #fca5a5;">⚠️ El navegador bloqueó la ventana emergente.</p>
-                <div id="g_id_onload"
-                    data-client_id="317250130958-9umc39ki6fjtv3isjd5u6a4iqhjbquhp.apps.googleusercontent.com"
-                    data-callback="handleCredentialResponse" data-auto_prompt="false">
-                </div>
-                <!-- Botón Google SignIn -->
-                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black"
-                    data-text="signin_with" data-size="large" data-logo_alignment="left"
-                    style="display: flex; justify-content: center; margin-bottom: 15px;">
-                </div>
+
+                <!-- Container para botón renderizado por JS -->
+                <div id="googleBtnContainer" style="display: flex; justify-content: center; margin-bottom: 15px;"></div>
 
                 <button onclick="handleAuthClick()"
                     style="width: 100%; padding: 12px 20px; background: #0f766e; color: white; border:none; border-radius: 8px; cursor: pointer; font-weight: bold; border: 1px solid rgba(255,255,255,0.2);">

@@ -86,6 +86,15 @@ function gisLoaded() {
         auto_select: true,
     });
 
+    // Renderizar botón explícitamente en el contenedor
+    const btnParent = document.getElementById('googleBtnContainer');
+    if (btnParent) {
+        google.accounts.id.renderButton(
+            btnParent,
+            { theme: "filled_black", size: "large", shape: "rectangular", width: "250", text: "signin_with" }
+        );
+    }
+
     tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: SCOPES,

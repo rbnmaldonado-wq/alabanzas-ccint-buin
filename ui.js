@@ -128,9 +128,11 @@ function updateStats() {
 }
 
 function updateSongSelector() {
-    const selector = document.getElementById('songSelector');
-    selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+    const selector = document.getElementById('sundaySongSelector');
+    if (selector) {
+        selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
+            songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+    }
     updateRehearsalSelector();
 }
 
@@ -354,8 +356,10 @@ function renderRehearsalList() {
 
 function updateRehearsalSelector() {
     const selector = document.getElementById('rehearsalSongSelector');
-    selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
-        songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+    if (selector) {
+        selector.innerHTML = '<option value="">Selecciona una alabanza...</option>' +
+            songs.map(song => `<option value="${song.id}">${song.name}</option>`).join('');
+    }
 }
 
 function renderRehearsalHistory() {

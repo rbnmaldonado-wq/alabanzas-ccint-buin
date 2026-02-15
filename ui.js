@@ -586,44 +586,63 @@ function showChurchSelection() {
     document.getElementById('loadingOverlay').classList.remove('active');
 }
 
-async function validateAndSaveChurch() {
-    const input = document.getElementById('churchIdInput').value.trim();
-    if (!input) return;
+async function validateAndSaveChurch(mode = 'MANUAL') {
+    let sheetId = '';
+    const btnId = mode === 'AUTO' ? 'createChurchBtn' : 'joinChurchBtn';
+    const btn = document.getElementById(btnId);
 
-    // Validación básica de formato de ID de Google Sheets
-    // Son largos, alfanuméricos y a veces tienen guiones o guiones bajos
-    if (input.length < 20) {
-        alert('⚠️ Ese ID parece muy corto. Asegúrate de copiar el ID correcto de la URL de tu hoja de cálculo.');
+    // Fallback por si el botón no existe en el DOM
+    if (!btn) {
+        console.error('Botón no encontrado para modo:', mode);
         return;
     }
 
-    const btn = document.getElementById('joinChurchBtn');
     const originalText = btn.textContent;
-    btn.textContent = 'Verificando...';
+    btn.textContent = 'Procesando...';
     btn.disabled = true;
 
-    // Intentar leer la hoja con este ID para verificar acceso
     try {
-        // Guardamos temporalmente para probar
-        setSpreadsheetId(input);
+        if (mode === 'AUTO') {
+            // Asegurarse de que tenemos token con scope de Drive
+            if (!gapi.client.drive) {
+                // Si no está cargada la librería drive, algo falló en init
+                // O el usuario no dio permisos. Forzamos popup de consent.
+                await tokenClient.requestAccessToken({ prompt: 'consent' });
+            }
+            // Crear copia automática
+            sheetId = await createChurchSheet();
+        } else {
+            // Modo Manual
+            sheetId = document.getElementById('churchIdInput').value.trim();
+            if (!sheetId) throw new Error('ID vacío');
+
+            if (sheetId.length < 20) {
+                alert('⚠️ Ese ID parece muy corto.');
+                throw new Error('ID corto');
+            }
+        }
+
+        // Validar acceso
+        setSpreadsheetId(sheetId);
 
         // Intentar leer la configuración (una celda liviana)
         await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: input,
+            spreadsheetId: sheetId,
             range: 'Users!A1',
         });
 
-        // Si no explota, es válido
         alert('✅ ¡Conexión exitosa! Bienvenido a tu iglesia.');
         document.getElementById('churchSelectionOverlay').classList.remove('active');
-
-        // Recargar la app para iniciar flujo normal
         location.reload();
 
     } catch (error) {
-        console.error('Error validando hoja:', error);
-        setSpreadsheetId(''); // Revertir
-        alert('❌ No se pudo conectar. Verifica que:\n1. El ID sea correcto.\n2. La hoja tenga permisos de lectura para "Cualquiera con el enlace" o tu usuario.\n3. La API Key tenga acceso.');
+        console.error('Error:', error);
+        setSpreadsheetId('');
+        if (mode === 'MANUAL' && error.message !== 'ID corto') {
+            alert('❌ No se pudo conectar. Verifica el ID o los permisos.');
+        } else if (mode === 'AUTO') {
+            alert('❌ Falló la creación automática. Por favor intenta el método manual.');
+        }
         btn.textContent = originalText;
         btn.disabled = false;
     }

@@ -1,4 +1,4 @@
-import { state, dispatch } from './state.js';
+import { state, dispatch } from './store.js';
 import { api } from './api.js';
 
 let elements = {};

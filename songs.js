@@ -1,4 +1,4 @@
-import { state, dispatch, actions } from './state.js';
+import { state, dispatch, actions } from './store.js';
 import { api } from './api.js';
 
 // Cache DOM elements

@@ -1,5 +1,5 @@
-import { initAuth, authState, onAuthChange, login, logout } from './auth.js';
-import { state, actions, subscribe } from './state.js';
+import { initAuth, authState, onAuthChange, login, logout } from './authService.js';
+import { state, actions, subscribe } from './store.js';
 import { api } from './api.js';
 import { initSongsUI, renderSongsList } from './songs.js';
 import { initSundayUI } from './sunday.js';

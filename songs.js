@@ -44,11 +44,11 @@ export function initSongsUI() {
     // Escuchar eventos del bus
     // (Asumimos que state.js emite 'data-loaded' y 'data-updated')
     // Nota: state.js usa EventTarget, así que usamos el helper subscribe que exportamos o addEventListener directo si tenemos acceso al bus.
-    // Revisando state.js, exportamos 'subscribe'.
+    // Revisando store.js, exportamos 'subscribe'.
 }
 
 // Subscribe globalmente al cambio de datos para re-renderizar si estamos en esta vista
-import { subscribe } from '../state.js';
+import { subscribe } from './store.js';
 subscribe('data-loaded', () => renderSongsList());
 subscribe('data-updated', () => renderSongsList());
 

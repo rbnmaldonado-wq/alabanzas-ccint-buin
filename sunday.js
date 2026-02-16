@@ -27,7 +27,7 @@ export function initSundayUI() {
     }
 
     // Subscribe to events
-    import('../state.js').then(({ subscribe }) => {
+    import('./store.js').then(({ subscribe }) => {
         subscribe('data-loaded', renderSundayUI);
         subscribe('data-updated', renderSundayUI); // Re-render if songs change (names, etc)
     });

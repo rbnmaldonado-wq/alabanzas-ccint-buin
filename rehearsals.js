@@ -14,7 +14,7 @@ export function initRehearsalsUI() {
     renderLayout();
 
     // Subscribe to events
-    import('../state.js').then(({ subscribe }) => {
+    import('./store.js').then(({ subscribe }) => {
         subscribe('data-loaded', renderRehearsalsList);
         subscribe('data-updated', renderRehearsalsList);
     });

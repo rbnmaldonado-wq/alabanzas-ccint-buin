@@ -67,7 +67,69 @@ export const api = {
         const values = state.songs.map(s => [
             s.id, s.name, s.difficulty, s.youtubeLink, s.pdfLink, s.addedDate
         ]);
+        await this.saveSongs();
+    },
+
+    async saveSongs() {
+        const values = state.songs.map(s => [
+            s.id, s.name, s.difficulty, s.youtubeLink, s.pdfLink, s.addedDate
+        ]);
+        // Sobrescribir todo el rango (Song!A2:F)
+        // Nota: Esto borra filas extra si hay menos canciones que antes
+        // Para limpiar bien, primero limpiamos. Pero Google Sheets API sobrescribe si values es menor? No siempre.
+        // Mejor estrategia simple: Escribir.
         await writeSheet(RANGES.SONGS, values);
+        dispatch('data-updated');
+    },
+
+    async saveSunday(sunday) {
+        // En este modelo simple, agregamos al historial.
+        // Verificamos si ya existe esa fecha para actualizarla en lugar de duplicar?
+        // Por simplicidad de V1 -> V2, hacemos append (o replace si el ID existe localmente).
+
+        const existingIndex = state.sundays.findIndex(s => s.date === sunday.date);
+
+        if (existingIndex >= 0) {
+            // Actualizar existente
+            state.sundays[existingIndex] = { ...state.sundays[existingIndex], ...sunday };
+        } else {
+            // Nuevo
+            state.sundays.push(sunday);
+        }
+
+        dispatch('data-updated');
+
+        // Persistir todo sundays
+        const values = state.sundays.map(s => [
+            s.id,
+            s.date,
+            s.songs.join(',')
+        ]);
+
+        await writeSheet(RANGES.SUNDAYS, values);
+    },
+
+    async saveRehearsal(rehearsal) {
+        const existingIndex = state.rehearsals.findIndex(r => r.id === rehearsal.id);
+        if (existingIndex >= 0) {
+            state.rehearsals[existingIndex] = { ...state.rehearsals[existingIndex], ...rehearsal };
+        } else {
+            state.rehearsals.push(rehearsal);
+        }
+        dispatch('data-updated');
+        await this.saveRehearsalsList(state.rehearsals);
+    },
+
+    async saveRehearsalsList(list) {
+        const values = list.map(r => [
+            r.id,
+            r.date,
+            r.time,
+            r.songs.join(','),
+            r.notes || ''
+        ]);
+        await writeSheet(RANGES.REHEARSALS, values);
+        dispatch('data-updated');
     },
 
     // Métodos similares para addSunday, deleteSong, etc...

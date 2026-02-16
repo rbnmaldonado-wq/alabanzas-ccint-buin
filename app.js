@@ -1,9 +1,9 @@
 import { initAuth, authState, onAuthChange, login, logout } from './authService.js';
 import { state, actions, subscribe } from './store.js';
-import { api } from './api.js';
-import { initSongsUI, renderSongsList } from './songs.js';
-import { initSundayUI } from './sunday.js';
-import { initRehearsalsUI } from './rehearsals.js'; // Fase siguiente
+import { api } from './apiService.js';
+import { initSongsUI, renderSongsList } from './songsView.js';
+import { initSundayUI } from './sundayView.js';
+import { initRehearsalsUI } from './rehearsalsView.js'; // Fase siguiente
 
 // Elementos UI
 const authOverlay = document.getElementById('authOverlay');

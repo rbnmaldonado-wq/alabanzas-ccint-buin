@@ -1,5 +1,5 @@
 import { state, dispatch, actions } from './store.js';
-import { api } from './api.js';
+import { api } from './apiService.js';
 
 // Cache DOM elements
 let elements = {};

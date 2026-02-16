@@ -1,5 +1,5 @@
-import { state, dispatch } from '../state.js';
-import { api } from '../api.js';
+import { state, dispatch } from './state.js';
+import { api } from './api.js';
 
 let elements = {};
 

@@ -64,13 +64,10 @@ export const actions = {
     loadFromStorage: () => {
         const savedId = localStorage.getItem('worship_manager_sheet_id');
         if (savedId) state.church.id = savedId;
-        const savedRole = localStorage.getItem('worship_manager_user_role');
-        if (savedRole) state.ui.userRole = savedRole;
     },
 
     setUserRole: (role) => {
         state.ui.userRole = role;
-        localStorage.setItem('worship_manager_user_role', role);
         dispatch('role-changed', { role });
     }
 };

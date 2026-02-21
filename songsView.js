@@ -128,7 +128,7 @@ function createSongCard(song) {
                 ` : ''}
             </div>
             
-            <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 5px;">
+            <div class="role-edit-only" style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 5px;">
                  <button class="icon-btn" onclick="window.editSong(${song.id})" style="color: #94a3b8;">
                     <span class="material-icons-round" style="font-size: 1.2em;">edit</span>
                  </button>

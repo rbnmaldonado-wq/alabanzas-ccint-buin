@@ -5,6 +5,12 @@ option {
     color: white;
 }
 
+/* Role-based visibility */
+body[data-role="musico"] .role-edit-only,
+body[data-role="invitado"] .role-edit-only {
+    display: none !important;
+}
+
 :root {
     /* --- Palette --- */
     --bg-main: #022c22;

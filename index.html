@@ -82,10 +82,14 @@
 
                 <!-- VISTA: REPERTORIO -->
                 <div id="view-repertorio" class="view-section active">
-                    <div class="action-bar" style="margin-bottom: 20px; display: flex; gap: 10px;">
-                        <input type="text" id="searchInput" placeholder="Buscar alabanza..." class="search-input">
+                    <div class="action-bar" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="searchInput" placeholder="Buscar alabanza..." class="search-input"
+                            style="flex: 1; min-width: 200px;">
                         <button id="addSongBtn" class="btn-primary">
                             <i class="material-icons-round" style="vertical-align: middle;">add</i> Nueva
+                        </button>
+                        <button id="proposeSongBtn" class="btn-primary" style="background: #0d9488; display: none;">
+                            <i class="material-icons-round" style="vertical-align: middle;">lightbulb</i> Proponer
                         </button>
                     </div>
                     <div id="songsList" class="song-grid">
@@ -136,22 +140,22 @@
                         <div style="margin-bottom: 20px;">
                             <h3>Cuenta</h3>
                             <p id="configUserEmail" style="color: var(--text-muted);"></p>
+                            <p style="margin-top: 8px;">Mi Rol: <span id="configUserRole"
+                                    style="color: var(--primary); font-weight: 600;">Invitado</span></p>
                         </div>
 
-                        <div
-                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                            <h3>Mi Rol</h3>
-                            <p style="font-size: 0.8em; color: #64748b; margin-bottom: 8px;">Define tu nivel de acceso
-                                en la app</p>
-                            <select id="roleSelect" class="search-input" style="width: auto; min-width: 180px;">
-                                <option value="lider">👑 Líder</option>
-                                <option value="musico">🎸 Músico</option>
-                                <option value="invitado">🌱 Invitado</option>
-                            </select>
+                        <div id="configUsersSection"
+                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: none;">
+                            <h3>Gestión de Usuarios</h3>
+                            <p style="font-size: 0.8em; color: #64748b; margin-bottom: 10px;">Asigna roles a los
+                                miembros</p>
+                            <div id="usersListContainer">
+                                <!-- JS populate -->
+                            </div>
                         </div>
 
                         <div id="configAdminSection"
-                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: none;">
                             <h3>Base de Datos</h3>
                             <p style="font-size: 0.8em; color: #64748b; margin-bottom: 5px;">ID de Google Sheet:</p>
                             <input type="text" id="sheetIdInput" class="search-input"
@@ -216,8 +220,35 @@
         </div>
     </div>
 
+    <!-- Modal Proponer Alabanza -->
+    <div id="proposeModal" class="role-selection-overlay" style="display: none; z-index: 4000;">
+        <div class="glass-card" style="width: 90%; max-width: 500px; padding: 30px; position: relative;">
+            <span id="closeProposeModal"
+                style="position: absolute; top: 15px; right: 20px; color: white; cursor: pointer; font-size: 1.5em;">&times;</span>
+            <h2 class="text-glow" style="margin-bottom: 20px;">Proponer Alabanza</h2>
+
+            <form id="proposeForm" style="text-align: left;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">Nombre de la
+                        alabanza</label>
+                    <input type="text" id="proposeNameInput" class="search-input" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: var(--text-muted); margin-bottom: 5px;">Notas /
+                        Comentario</label>
+                    <input type="text" id="proposeNotesInput" class="search-input" placeholder="Por qué la propones...">
+                </div>
+                <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="cancelProposeBtn" class="btn-danger"
+                        style="background: transparent; border: 1px solid #ef4444;">Cancelar</button>
+                    <button type="submit" class="btn-primary">Enviar Propuesta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
-    <script type="module" src="./app.js?v=2.2"></script>
+    <script type="module" src="./app.js?v=2.3"></script>
 </body>
 
 </html>

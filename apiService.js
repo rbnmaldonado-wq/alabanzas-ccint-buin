@@ -132,8 +132,32 @@ export const api = {
         dispatch('data-updated');
     },
 
-    // Métodos similares para addSunday, deleteSong, etc...
-    // Por brevedad en esta fase, implementaremos lo esencial para leer primero.
+    // --- Usuarios ---
+
+    async saveUsers() {
+        const values = state.users.map(u => [
+            u.email, u.name, u.role, u.joinedDate
+        ]);
+        await writeSheet(RANGES.USERS, values);
+        dispatch('data-updated');
+    },
+
+    async addUser(user) {
+        state.users.push(user);
+        dispatch('data-updated');
+        await this.saveUsers();
+    },
+
+    // --- Propuestas (Pending) ---
+
+    async addProposal(song) {
+        state.pending.push(song);
+        dispatch('data-updated');
+        const values = state.pending.map(s => [
+            s.id, s.name, s.suggestedBy, s.priority, s.notes, s.dateAdded
+        ]);
+        await writeSheet(RANGES.PENDING, values);
+    },
 
     // --- Gestión de Archivos ---
 

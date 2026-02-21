@@ -19,8 +19,23 @@ const pageTitle = document.getElementById('pageTitle');
 const sheetIdInput = document.getElementById('sheetIdInput');
 const saveSheetIdBtn = document.getElementById('saveSheetIdBtn');
 const configUserEmail = document.getElementById('configUserEmail');
-const roleSelect = document.getElementById('roleSelect');
 const configAdminSection = document.getElementById('configAdminSection');
+const configUsersSection = document.getElementById('configUsersSection');
+const configUserRole = document.getElementById('configUserRole');
+const usersListContainer = document.getElementById('usersListContainer');
+
+// Action buttons
+const addSongBtn = document.getElementById('addSongBtn');
+const proposeSongBtn = document.getElementById('proposeSongBtn');
+const saveSundayBtn = document.getElementById('saveSundayBtn');
+
+// Propose modal
+const proposeModal = document.getElementById('proposeModal');
+const proposeForm = document.getElementById('proposeForm');
+const closeProposeModal = document.getElementById('closeProposeModal');
+const cancelProposeBtn = document.getElementById('cancelProposeBtn');
+const proposeNameInput = document.getElementById('proposeNameInput');
+const proposeNotesInput = document.getElementById('proposeNotesInput');
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
@@ -46,6 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('ID guardado correctamente. Cargando datos...');
             try {
                 await api.loadAll();
+                resolveUserRole();
             } catch (e) {
                 console.error('Error cargando datos con nuevo ID:', e);
                 alert('Error cargando datos. Verifica que el ID sea correcto.');
@@ -53,13 +69,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. Rol selector
-    if (roleSelect) {
-        roleSelect.value = state.ui.userRole;
-        applyRolePermissions(state.ui.userRole);
-        roleSelect.addEventListener('change', () => {
-            actions.setUserRole(roleSelect.value);
-            applyRolePermissions(roleSelect.value);
+    // 5. Propose song modal
+    if (proposeSongBtn) {
+        proposeSongBtn.addEventListener('click', () => {
+            if (proposeModal) proposeModal.style.display = 'flex';
+            if (proposeNameInput) proposeNameInput.focus();
+        });
+    }
+    if (closeProposeModal) closeProposeModal.addEventListener('click', closeProposeModalFn);
+    if (cancelProposeBtn) cancelProposeBtn.addEventListener('click', closeProposeModalFn);
+    if (proposeForm) {
+        proposeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = proposeNameInput.value.trim();
+            if (!name) return;
+            try {
+                await api.addProposal({
+                    id: Date.now(),
+                    name: name,
+                    suggestedBy: authState.userEmail || 'Anónimo',
+                    priority: 'Normal',
+                    notes: proposeNotesInput.value.trim(),
+                    dateAdded: new Date().toISOString()
+                });
+                closeProposeModalFn();
+                alert('¡Propuesta enviada!');
+            } catch (err) {
+                console.error('Error enviando propuesta:', err);
+                alert('Error al enviar propuesta.');
+            }
         });
     }
 
@@ -73,7 +111,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     subscribe('loading-start', (e) => console.log('Cargando:', e.detail.message));
     subscribe('data-loaded', () => {
         console.log('Datos cargados. Renderizando UI...');
-        renderSongsList(); // Render inicial
+        renderSongsList();
+        resolveUserRole();
     });
 
     // 8. Iniciar Auth
@@ -84,6 +123,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (authStatusText) authStatusText.textContent = 'Error iniciando sistema. Revisa consola.';
     }
 });
+
+function closeProposeModalFn() {
+    if (proposeModal) proposeModal.style.display = 'none';
+    if (proposeForm) proposeForm.reset();
+}
 
 // --- Navegación entre Tabs ---
 function initNavigation() {
@@ -112,11 +156,121 @@ function initNavigation() {
     });
 }
 
-// --- Role Permissions ---
-function applyRolePermissions(role) {
-    if (configAdminSection) {
-        configAdminSection.style.display = (role === 'lider') ? 'block' : 'none';
+// --- Resolve User Role from Server Data ---
+async function resolveUserRole() {
+    if (!authState.userEmail || !state.users || state.users.length === 0) {
+        // No users loaded yet or not authenticated — default to invitado
+        actions.setUserRole('invitado');
+        applyRolePermissions('invitado');
+        return;
     }
+
+    const currentUser = state.users.find(u =>
+        u.email && u.email.toLowerCase() === authState.userEmail.toLowerCase()
+    );
+
+    if (currentUser) {
+        // User found in sheet — use their role
+        const role = currentUser.role || 'invitado';
+        actions.setUserRole(role);
+        applyRolePermissions(role);
+    } else {
+        // New user — register as invitado
+        const newUser = {
+            email: authState.userEmail,
+            name: authState.userName || authState.userEmail.split('@')[0],
+            role: 'invitado',
+            joinedDate: new Date().toISOString()
+        };
+        try {
+            await api.addUser(newUser);
+        } catch (e) {
+            console.warn('Error registrando usuario nuevo:', e);
+        }
+        actions.setUserRole('invitado');
+        applyRolePermissions('invitado');
+    }
+}
+
+// --- Role Permissions ---
+const ROLE_LABELS = {
+    lider: '👑 Líder',
+    musico: '🎸 Músico',
+    invitado: '🌱 Invitado'
+};
+
+function applyRolePermissions(role) {
+    const isLider = role === 'lider';
+    const isMusico = role === 'musico';
+
+    // Config sections — Líder only
+    if (configAdminSection) configAdminSection.style.display = isLider ? 'block' : 'none';
+    if (configUsersSection) {
+        configUsersSection.style.display = isLider ? 'block' : 'none';
+        if (isLider) renderUsersList();
+    }
+
+    // Role display
+    if (configUserRole) configUserRole.textContent = ROLE_LABELS[role] || role;
+
+    // Repertorio buttons
+    if (addSongBtn) addSongBtn.style.display = isLider ? 'inline-flex' : 'none';
+    if (proposeSongBtn) proposeSongBtn.style.display = (isLider || isMusico) ? 'inline-flex' : 'none';
+
+    // Sunday save button
+    if (saveSundayBtn) saveSundayBtn.style.display = isLider ? 'inline-block' : 'none';
+
+    // Edit buttons in song cards — handled by CSS class on body
+    document.body.setAttribute('data-role', role);
+}
+
+// --- Render Users List (Líder only) ---
+function renderUsersList() {
+    if (!usersListContainer) return;
+
+    const users = state.users || [];
+    if (users.length === 0) {
+        usersListContainer.innerHTML = '<p style="color: var(--text-muted);">No hay usuarios registrados.</p>';
+        return;
+    }
+
+    usersListContainer.innerHTML = users.map((user, index) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; 
+                    border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px;">
+            <div style="flex: 1; min-width: 0;">
+                <p style="color: white; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.name || user.email}</p>
+                <p style="font-size: 0.75em; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${user.email}</p>
+            </div>
+            <select class="search-input user-role-select" data-index="${index}" 
+                    style="width: auto; min-width: 130px; padding: 8px 12px; font-size: 0.85em;">
+                <option value="lider" ${user.role === 'lider' ? 'selected' : ''}>👑 Líder</option>
+                <option value="musico" ${user.role === 'musico' ? 'selected' : ''}>🎸 Músico</option>
+                <option value="invitado" ${user.role === 'invitado' ? 'selected' : ''}>🌱 Invitado</option>
+            </select>
+        </div>
+    `).join('');
+
+    // Attach change listeners
+    usersListContainer.querySelectorAll('.user-role-select').forEach(select => {
+        select.addEventListener('change', async (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'));
+            const newRole = e.target.value;
+            state.users[idx].role = newRole;
+
+            // If changing own role, update UI
+            if (state.users[idx].email.toLowerCase() === authState.userEmail.toLowerCase()) {
+                actions.setUserRole(newRole);
+                applyRolePermissions(newRole);
+            }
+
+            try {
+                await api.saveUsers();
+            } catch (err) {
+                console.error('Error guardando roles:', err);
+                alert('Error guardando cambios de rol.');
+            }
+        });
+    });
 }
 
 // --- Auth Change Handler ---
@@ -130,10 +284,6 @@ async function handleAuthChange() {
         // Actualizar Configuración
         if (configUserEmail) configUserEmail.textContent = authState.userEmail || '';
         if (sheetIdInput) sheetIdInput.value = state.church.id || '';
-        if (roleSelect) {
-            roleSelect.value = state.ui.userRole;
-            applyRolePermissions(state.ui.userRole);
-        }
 
         // Verificar si tenemos hoja conectada
         if (state.church.id) {
@@ -141,6 +291,8 @@ async function handleAuthChange() {
             await api.loadAll();
         } else {
             console.log('Usuario autenticado pero sin iglesia seleccionada.');
+            // Default permissions for un-connected state
+            applyRolePermissions('invitado');
         }
 
     } else {
@@ -151,4 +303,3 @@ async function handleAuthChange() {
         if (manualAuthTrigger) manualAuthTrigger.style.display = 'block';
     }
 }
-

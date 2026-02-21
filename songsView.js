@@ -16,7 +16,8 @@ export function initSongsUI() {
         // Form inputs
         nameInput: document.getElementById('modalSongName'),
         difficultyInput: document.getElementById('modalSongDifficulty'),
-        youtubeInput: document.getElementById('modalSongYoutube')
+        youtubeInput: document.getElementById('modalSongYoutube'),
+        docInput: document.getElementById('modalSongDoc')
     };
 
     // Listeners
@@ -120,6 +121,11 @@ function createSongCard(song) {
                         <span class="material-icons-round">play_circle</span>
                     </a>
                 ` : ''}
+                ${song.docLink ? `
+                    <a href="${song.docLink}" target="_blank" class="icon-btn" style="color:#60a5fa; text-decoration:none;">
+                        <span class="material-icons-round">description</span>
+                    </a>
+                ` : ''}
             </div>
             
             <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 5px;">
@@ -150,6 +156,7 @@ function openModal(song = null) {
     elements.nameInput.value = song ? song.name : '';
     elements.difficultyInput.value = song ? song.difficulty : 'Media';
     elements.youtubeInput.value = song ? song.youtubeLink : '';
+    elements.docInput.value = song ? (song.docLink || '') : '';
 
     // Mostrar
     elements.modal.style.display = 'flex';
@@ -174,6 +181,7 @@ async function handleFormSubmit(e) {
         name: name,
         difficulty: elements.difficultyInput.value,
         youtubeLink: elements.youtubeInput.value.trim(),
+        docLink: elements.docInput.value.trim(),
         addedDate: editingSongId ? undefined : new Date().toISOString() // Mantener fecha original si editamos
     };
 

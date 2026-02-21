@@ -33,6 +33,7 @@ const navProponer = document.getElementById('navProponer');
 const proposeForm = document.getElementById('proposeForm');
 const proposeNameInput = document.getElementById('proposeNameInput');
 const proposeNotesInput = document.getElementById('proposeNotesInput');
+const proposeYoutubeInput = document.getElementById('proposeYoutubeInput');
 const proposalsList = document.getElementById('proposalsList');
 
 // Inicialización
@@ -80,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     suggestedBy: authState.userEmail || 'Anónimo',
                     priority: 'Normal',
                     notes: proposeNotesInput.value.trim(),
+                    youtubeLink: proposeYoutubeInput ? proposeYoutubeInput.value.trim() : '',
                     dateAdded: new Date().toISOString()
                 });
                 proposeForm.reset();
@@ -226,6 +228,7 @@ function renderProposalsList() {
                 <div>
                     <p style="color: white; font-weight: 500;">🎵 ${p.name}</p>
                     ${p.notes ? `<p style="font-size: 0.8em; color: #64748b; margin-top: 3px;">${p.notes}</p>` : ''}
+                    ${p.youtubeLink ? `<a href="${p.youtubeLink}" target="_blank" style="color: #ef4444; text-decoration: none; font-size: 0.85em; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px;"><span class="material-icons-round" style="font-size: 1em;">play_circle</span> YouTube</a>` : ''}
                 </div>
                 <div style="text-align: right; font-size: 0.75em; color: #64748b;">
                     <p>${p.suggestedBy || ''}</p>

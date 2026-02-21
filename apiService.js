@@ -4,7 +4,7 @@ import { state, dispatch } from './store.js';
 const RANGES = {
     SONGS: 'Songs!A2:F',
     SUNDAYS: 'Sundays!A2:C',
-    PENDING: 'Pending!A2:F',
+    PENDING: 'Pending!A2:G',
     LEARNED: 'Learned!A2:F',
     REHEARSALS: 'Rehearsals!A2:E',
     USERS: 'Users!A2:D',
@@ -154,7 +154,7 @@ export const api = {
         state.pending.push(song);
         dispatch('data-updated');
         const values = state.pending.map(s => [
-            s.id, s.name, s.suggestedBy, s.priority, s.notes, s.dateAdded
+            s.id, s.name, s.suggestedBy, s.priority, s.notes, s.dateAdded, s.youtubeLink || ''
         ]);
         await writeSheet(RANGES.PENDING, values);
     },
@@ -234,7 +234,8 @@ function mapPending(rows) {
         suggestedBy: r[2],
         priority: r[3],
         notes: r[4],
-        dateAdded: r[5]
+        dateAdded: r[5],
+        youtubeLink: r[6] || ''
     })).filter(s => s.id);
 }
 

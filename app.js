@@ -26,16 +26,14 @@ const usersListContainer = document.getElementById('usersListContainer');
 
 // Action buttons
 const addSongBtn = document.getElementById('addSongBtn');
-const proposeSongBtn = document.getElementById('proposeSongBtn');
 const saveSundayBtn = document.getElementById('saveSundayBtn');
+const navProponer = document.getElementById('navProponer');
 
-// Propose modal
-const proposeModal = document.getElementById('proposeModal');
+// Propose form (inline in view)
 const proposeForm = document.getElementById('proposeForm');
-const closeProposeModal = document.getElementById('closeProposeModal');
-const cancelProposeBtn = document.getElementById('cancelProposeBtn');
 const proposeNameInput = document.getElementById('proposeNameInput');
 const proposeNotesInput = document.getElementById('proposeNotesInput');
+const proposalsList = document.getElementById('proposalsList');
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,15 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. Propose song modal
-    if (proposeSongBtn) {
-        proposeSongBtn.addEventListener('click', () => {
-            if (proposeModal) proposeModal.style.display = 'flex';
-            if (proposeNameInput) proposeNameInput.focus();
-        });
-    }
-    if (closeProposeModal) closeProposeModal.addEventListener('click', closeProposeModalFn);
-    if (cancelProposeBtn) cancelProposeBtn.addEventListener('click', closeProposeModalFn);
+    // 5. Propose form (inline)
     if (proposeForm) {
         proposeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -92,8 +82,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     notes: proposeNotesInput.value.trim(),
                     dateAdded: new Date().toISOString()
                 });
-                closeProposeModalFn();
+                proposeForm.reset();
                 alert('¡Propuesta enviada!');
+                renderProposalsList();
             } catch (err) {
                 console.error('Error enviando propuesta:', err);
                 alert('Error al enviar propuesta.');
@@ -113,6 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Datos cargados. Renderizando UI...');
         renderSongsList();
         resolveUserRole();
+        renderProposalsList();
     });
 
     // 8. Iniciar Auth
@@ -123,11 +115,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (authStatusText) authStatusText.textContent = 'Error iniciando sistema. Revisa consola.';
     }
 });
-
-function closeProposeModalFn() {
-    if (proposeModal) proposeModal.style.display = 'none';
-    if (proposeForm) proposeForm.reset();
-}
 
 // --- Navegación entre Tabs ---
 function initNavigation() {
@@ -159,7 +146,6 @@ function initNavigation() {
 // --- Resolve User Role from Server Data ---
 async function resolveUserRole() {
     if (!authState.userEmail || !state.users || state.users.length === 0) {
-        // No users loaded yet or not authenticated — default to invitado
         actions.setUserRole('invitado');
         applyRolePermissions('invitado');
         return;
@@ -170,12 +156,10 @@ async function resolveUserRole() {
     );
 
     if (currentUser) {
-        // User found in sheet — use their role
         const role = currentUser.role || 'invitado';
         actions.setUserRole(role);
         applyRolePermissions(role);
     } else {
-        // New user — register as invitado
         const newUser = {
             email: authState.userEmail,
             name: authState.userName || authState.userEmail.split('@')[0],
@@ -215,13 +199,40 @@ function applyRolePermissions(role) {
 
     // Repertorio buttons
     if (addSongBtn) addSongBtn.style.display = isLider ? 'inline-flex' : 'none';
-    if (proposeSongBtn) proposeSongBtn.style.display = (isLider || isMusico) ? 'inline-flex' : 'none';
+
+    // Nav Proponer — visible for Líder and Músico
+    if (navProponer) navProponer.style.display = (isLider || isMusico) ? 'flex' : 'none';
 
     // Sunday save button
     if (saveSundayBtn) saveSundayBtn.style.display = isLider ? 'inline-block' : 'none';
 
     // Edit buttons in song cards — handled by CSS class on body
     document.body.setAttribute('data-role', role);
+}
+
+// --- Render Proposals List ---
+function renderProposalsList() {
+    if (!proposalsList) return;
+    const proposals = state.pending || [];
+
+    if (proposals.length === 0) {
+        proposalsList.innerHTML = '<p>No hay propuestas aún.</p>';
+        return;
+    }
+
+    proposalsList.innerHTML = proposals.map(p => `
+        <div class="glass-card" style="padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="color: white; font-weight: 500;">🎵 ${p.name}</p>
+                    ${p.notes ? `<p style="font-size: 0.8em; color: #64748b; margin-top: 3px;">${p.notes}</p>` : ''}
+                </div>
+                <div style="text-align: right; font-size: 0.75em; color: #64748b;">
+                    <p>${p.suggestedBy || ''}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
 // --- Render Users List (Líder only) ---
@@ -257,7 +268,6 @@ function renderUsersList() {
             const newRole = e.target.value;
             state.users[idx].role = newRole;
 
-            // If changing own role, update UI
             if (state.users[idx].email.toLowerCase() === authState.userEmail.toLowerCase()) {
                 actions.setUserRole(newRole);
                 applyRolePermissions(newRole);
@@ -276,27 +286,22 @@ function renderUsersList() {
 // --- Auth Change Handler ---
 async function handleAuthChange() {
     if (authState.isAuthenticated) {
-        // Usuario logueado
         if (authOverlay) authOverlay.style.display = 'none';
         if (appContainer) appContainer.style.display = 'flex';
         if (userInfoDisplay) userInfoDisplay.textContent = authState.userEmail;
 
-        // Actualizar Configuración
         if (configUserEmail) configUserEmail.textContent = authState.userEmail || '';
         if (sheetIdInput) sheetIdInput.value = state.church.id || '';
 
-        // Verificar si tenemos hoja conectada
         if (state.church.id) {
             console.log('Cargando datos de iglesia:', state.church.id);
             await api.loadAll();
         } else {
             console.log('Usuario autenticado pero sin iglesia seleccionada.');
-            // Default permissions for un-connected state
             applyRolePermissions('invitado');
         }
 
     } else {
-        // Usuario desconectado
         if (authOverlay) authOverlay.style.display = 'flex';
         if (appContainer) appContainer.style.display = 'none';
         if (authStatusText) authStatusText.textContent = 'Bienvenido. Inicia sesión para continuar.';

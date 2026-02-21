@@ -1,12 +1,4 @@
 /* Sanctuary Teal Theme - Worship Manager V2 (Optimized) */
-/* Input generico dark para selects dinámicos */
-.search-input {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-}
 
 option {
     background: #0f172a;

@@ -35,7 +35,8 @@ export function initSundayUI() {
 
 function getNextSunday() {
     const d = new Date();
-    d.setDate(d.getDate() + (7 - d.getDay()) % 7);
+    const daysUntilSunday = (7 - d.getDay()) % 7 || 7; // If today is Sunday, go to next Sunday
+    d.setDate(d.getDate() + daysUntilSunday);
     return d;
 }
 

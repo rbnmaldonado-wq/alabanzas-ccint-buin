@@ -19,6 +19,8 @@ const pageTitle = document.getElementById('pageTitle');
 const sheetIdInput = document.getElementById('sheetIdInput');
 const saveSheetIdBtn = document.getElementById('saveSheetIdBtn');
 const configUserEmail = document.getElementById('configUserEmail');
+const roleSelect = document.getElementById('roleSelect');
+const configAdminSection = document.getElementById('configAdminSection');
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
@@ -51,12 +53,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. Inicializar Módulos UI
+    // 5. Rol selector
+    if (roleSelect) {
+        roleSelect.value = state.ui.userRole;
+        applyRolePermissions(state.ui.userRole);
+        roleSelect.addEventListener('change', () => {
+            actions.setUserRole(roleSelect.value);
+            applyRolePermissions(roleSelect.value);
+        });
+    }
+
+    // 6. Inicializar Módulos UI
     initSongsUI();
     initSundayUI();
     initRehearsalsUI();
 
-    // 6. Suscribirse a cambios
+    // 7. Suscribirse a cambios
     onAuthChange(handleAuthChange);
     subscribe('loading-start', (e) => console.log('Cargando:', e.detail.message));
     subscribe('data-loaded', () => {
@@ -64,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSongsList(); // Render inicial
     });
 
-    // 7. Iniciar Auth
+    // 8. Iniciar Auth
     try {
         await initAuth();
     } catch (e) {
@@ -79,7 +91,8 @@ function initNavigation() {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const tab = item.getAttribute('data-tab');
-            const title = item.getAttribute('data-title');
+            const labelEl = item.querySelector('.nav-label');
+            const title = labelEl ? labelEl.textContent : tab;
 
             // Update active class
             navItems.forEach(n => n.classList.remove('active'));
@@ -99,6 +112,13 @@ function initNavigation() {
     });
 }
 
+// --- Role Permissions ---
+function applyRolePermissions(role) {
+    if (configAdminSection) {
+        configAdminSection.style.display = (role === 'lider') ? 'block' : 'none';
+    }
+}
+
 // --- Auth Change Handler ---
 async function handleAuthChange() {
     if (authState.isAuthenticated) {
@@ -110,6 +130,10 @@ async function handleAuthChange() {
         // Actualizar Configuración
         if (configUserEmail) configUserEmail.textContent = authState.userEmail || '';
         if (sheetIdInput) sheetIdInput.value = state.church.id || '';
+        if (roleSelect) {
+            roleSelect.value = state.ui.userRole;
+            applyRolePermissions(state.ui.userRole);
+        }
 
         // Verificar si tenemos hoja conectada
         if (state.church.id) {

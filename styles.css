@@ -37,8 +37,7 @@ option {
     --radius-md: 16px;
     --radius-sm: 12px;
 
-    --sidebar-width: 80px;
-    --sidebar-width-expanded: 240px;
+    --sidebar-width: 220px;
     --header-height: 80px;
 
     /* --- Effects --- */
@@ -91,53 +90,9 @@ body {
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 30px 0;
-    z-index: var(--z-sidebar);
-    transition: width 0.3s ease;
-}
-
-.sidebar:hover {
-    width: var(--sidebar-width-expanded);
     align-items: flex-start;
-    padding-left: 20px;
-}
-
-.sidebar:hover .sidebar-logo {
-    margin-left: 10px;
-}
-
-.sidebar:hover .nav-item {
-    width: 200px;
-    justify-content: flex-start;
-    padding-left: 12px;
-}
-
-.sidebar:hover .nav-item span {
-    margin-right: 15px;
-}
-
-.sidebar:hover .nav-item::after {
-    display: none;
-}
-
-/* Hide tooltip on expand */
-
-/* Sidebar Labels (Expanded) */
-.nav-item::before {
-    content: attr(data-title);
-    position: absolute;
-    left: 50px;
-    opacity: 0;
-    white-space: nowrap;
-    transition: opacity 0.2s;
-    pointer-events: none;
-}
-
-.sidebar:hover .nav-item::before {
-    opacity: 1;
-    position: static;
-    pointer-events: auto;
+    padding: 30px 15px;
+    z-index: var(--z-sidebar);
 }
 
 /* Logo */
@@ -160,23 +115,24 @@ body {
 .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 8px;
     width: 100%;
-    align-items: center;
 }
 
 .nav-item {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 44px;
     border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
+    padding: 0 12px;
     color: rgba(255, 255, 255, 0.5);
     transition: all 0.3s ease;
     cursor: pointer;
-    position: relative;
     border: 1px solid transparent;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -191,30 +147,14 @@ body {
     box-shadow: 0 0 15px rgba(20, 184, 166, 0.15);
 }
 
-.nav-item span {
-    font-size: 24px;
+.nav-item .nav-icon {
+    font-size: 22px;
+    flex-shrink: 0;
 }
 
-/* Tooltip (Collapsed) */
-.nav-item::after {
-    content: attr(data-title);
-    position: absolute;
-    left: 60px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    white-space: nowrap;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 200;
-}
-
-.nav-item:hover::after {
-    opacity: 1;
+.nav-item .nav-label {
+    font-weight: 400;
+    letter-spacing: 0.3px;
 }
 
 /* --- Main Content --- */
@@ -395,11 +335,6 @@ body {
         border-right: none;
     }
 
-    .sidebar:hover {
-        width: 100%;
-        padding-left: 0;
-    }
-
     .sidebar-logo {
         display: none;
     }
@@ -417,32 +352,26 @@ body {
         flex: 1;
         border-radius: 0;
         flex-direction: column;
+        justify-content: center;
+        padding: 0;
+        gap: 2px;
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         color: #94a3b8;
+        font-size: 1rem;
     }
 
     .nav-item.active {
         color: var(--primary);
     }
 
-    .nav-item span {
-        font-size: 24px;
-        margin-bottom: 2px;
+    .nav-item .nav-icon {
+        font-size: 22px;
     }
 
-    /* Mobile Labels */
-    .nav-item::before {
-        content: attr(data-title);
-        position: static;
-        opacity: 1;
+    .nav-item .nav-label {
         font-size: 10px;
-        pointer-events: auto;
-    }
-
-    .nav-item::after {
-        display: none;
     }
 
     .main-content {

@@ -48,18 +48,21 @@
                 <span class="material-icons-round">temple_hindu</span>
             </div>
             <nav class="nav-menu">
-                <div class="nav-item active" data-tab="repertorio" data-title="Repertorio">
-                    <span class="material-icons-round">library_music</span>
+                <div class="nav-item active" data-tab="repertorio">
+                    <span class="material-icons-round nav-icon">library_music</span>
+                    <span class="nav-label">Repertorio</span>
                 </div>
-                <div class="nav-item" data-tab="domingo" data-title="Domingo">
-                    <span class="material-icons-round">event_available</span>
+                <div class="nav-item" data-tab="domingo">
+                    <span class="material-icons-round nav-icon">event_available</span>
+                    <span class="nav-label">Domingo</span>
                 </div>
-                <div class="nav-item" data-tab="ensayos" data-title="Ensayos">
-                    <span class="material-icons-round">groups</span>
+                <div class="nav-item" data-tab="ensayos">
+                    <span class="material-icons-round nav-icon">groups</span>
+                    <span class="nav-label">Ensayos</span>
                 </div>
-                <!-- Pendientes eliminado por simplicidad inicial, se puede re-agregar -->
-                <div class="nav-item" data-tab="configuracion" data-title="Configuración">
-                    <span class="material-icons-round">settings</span>
+                <div class="nav-item" data-tab="configuracion">
+                    <span class="material-icons-round nav-icon">settings</span>
+                    <span class="nav-label">Config</span>
                 </div>
             </nav>
         </aside>
@@ -136,6 +139,18 @@
                         </div>
 
                         <div
+                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                            <h3>Mi Rol</h3>
+                            <p style="font-size: 0.8em; color: #64748b; margin-bottom: 8px;">Define tu nivel de acceso
+                                en la app</p>
+                            <select id="roleSelect" class="search-input" style="width: auto; min-width: 180px;">
+                                <option value="lider">👑 Líder</option>
+                                <option value="musico">🎸 Músico</option>
+                                <option value="invitado">🌱 Invitado</option>
+                            </select>
+                        </div>
+
+                        <div id="configAdminSection"
                             style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
                             <h3>Base de Datos</h3>
                             <p style="font-size: 0.8em; color: #64748b; margin-bottom: 5px;">ID de Google Sheet:</p>

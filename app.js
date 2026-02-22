@@ -36,6 +36,21 @@ const proposeNotesInput = document.getElementById('proposeNotesInput');
 const proposeYoutubeInput = document.getElementById('proposeYoutubeInput');
 const proposalsList = document.getElementById('proposalsList');
 
+// Dashboard elements
+const dashboardLogo = document.getElementById('dashboardLogo');
+const dashboardChurchName = document.getElementById('dashboardChurchName');
+const dashboardTeam = document.getElementById('dashboardTeam');
+const dashboardSunday = document.getElementById('dashboardSunday');
+const statSongs = document.getElementById('statSongs');
+const statPending = document.getElementById('statPending');
+const statMembers = document.getElementById('statMembers');
+
+// Church config elements
+const configChurchSection = document.getElementById('configChurchSection');
+const churchNameInput = document.getElementById('churchNameInput');
+const churchLogoInput = document.getElementById('churchLogoInput');
+const saveChurchInfoBtn = document.getElementById('saveChurchInfoBtn');
+
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargar configuración local
@@ -68,7 +83,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. Propose form (inline)
+    // 5. Church info save
+    if (saveChurchInfoBtn) {
+        saveChurchInfoBtn.addEventListener('click', async () => {
+            const name = churchNameInput ? churchNameInput.value.trim() : '';
+            const logo = churchLogoInput ? churchLogoInput.value.trim() : '';
+            if (name) state.church.config.churchName = name;
+            state.church.config.logoUrl = logo;
+            localStorage.setItem('worship_church_name', name);
+            localStorage.setItem('worship_church_logo', logo);
+            renderDashboard();
+            alert('Información de iglesia guardada.');
+        });
+    }
+
+    // 6. Propose form (inline)
     if (proposeForm) {
         proposeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -107,6 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSongsList();
         resolveUserRole();
         renderProposalsList();
+        renderDashboard();
     });
 
     // 8. Iniciar Auth
@@ -191,6 +221,7 @@ function applyRolePermissions(role) {
 
     // Config sections — Líder only
     if (configAdminSection) configAdminSection.style.display = isLider ? 'block' : 'none';
+    if (configChurchSection) configChurchSection.style.display = isLider ? 'block' : 'none';
     if (configUsersSection) {
         configUsersSection.style.display = isLider ? 'block' : 'none';
         if (isLider) renderUsersList();
@@ -236,6 +267,94 @@ function renderProposalsList() {
             </div>
         </div>
     `).join('');
+}
+
+// --- Render Dashboard ---
+function renderDashboard() {
+    // Church name — from config, localStorage, or default
+    const churchName = state.church.config?.churchName
+        || localStorage.getItem('worship_church_name')
+        || 'Mi Iglesia';
+    const logoUrl = state.church.config?.logoUrl
+        || localStorage.getItem('worship_church_logo')
+        || '';
+
+    if (dashboardChurchName) dashboardChurchName.textContent = churchName;
+
+    // Logo
+    if (dashboardLogo) {
+        if (logoUrl) {
+            dashboardLogo.innerHTML = `<img src="${logoUrl}" alt="Logo" style="max-height: 80px; max-width: 200px; border-radius: 12px;">`;
+        } else {
+            dashboardLogo.innerHTML = '<span class="material-icons-round" style="font-size: 3em; color: var(--primary);">church</span>';
+        }
+    }
+
+    // Church config inputs
+    if (churchNameInput) churchNameInput.value = churchName !== 'Mi Iglesia' ? churchName : '';
+    if (churchLogoInput) churchLogoInput.value = logoUrl;
+
+    // Team
+    if (dashboardTeam) {
+        const users = state.users || [];
+        if (users.length === 0) {
+            dashboardTeam.innerHTML = '<p style="color: var(--text-muted);">No hay miembros registrados.</p>';
+        } else {
+            const groups = { lider: [], musico: [], invitado: [] };
+            users.forEach(u => {
+                const role = u.role || 'invitado';
+                if (!groups[role]) groups[role] = [];
+                groups[role].push(u);
+            });
+
+            let html = '';
+            if (groups.lider.length > 0) {
+                html += `<div style="margin-bottom: 12px;">
+                    <p style="font-weight: 600; color: #fbbf24; margin-bottom: 6px;">👑 Líder</p>
+                    ${groups.lider.map(u => `<p style="color: white; padding-left: 10px;">• ${u.name || u.email}</p>`).join('')}
+                </div>`;
+            }
+            if (groups.musico.length > 0) {
+                html += `<div style="margin-bottom: 12px;">
+                    <p style="font-weight: 600; color: #34d399; margin-bottom: 6px;">🎸 Músicos</p>
+                    ${groups.musico.map(u => `<p style="color: white; padding-left: 10px;">• ${u.name || u.email}</p>`).join('')}
+                </div>`;
+            }
+            if (groups.invitado.length > 0) {
+                html += `<div style="margin-bottom: 12px;">
+                    <p style="font-weight: 600; color: #94a3b8; margin-bottom: 6px;">🌱 Invitados</p>
+                    ${groups.invitado.map(u => `<p style="color: white; padding-left: 10px;">• ${u.name || u.email}</p>`).join('')}
+                </div>`;
+            }
+            dashboardTeam.innerHTML = html || '<p style="color: var(--text-muted);">No hay miembros.</p>';
+        }
+    }
+
+    // Next Sunday
+    if (dashboardSunday) {
+        const sundays = state.sundays || [];
+        const today = new Date().toISOString().split('T')[0];
+        const upcoming = sundays.filter(s => s.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+        const next = upcoming[0] || sundays[sundays.length - 1];
+
+        if (next && next.songs && next.songs.length > 0) {
+            const songNames = next.songs.map(id => {
+                const song = state.songs.find(s => s.id === id);
+                return song ? song.name : `ID ${id}`;
+            });
+            dashboardSunday.innerHTML = `
+                <p style="color: var(--primary); font-weight: 500; margin-bottom: 8px;">📅 ${next.date}</p>
+                ${songNames.map(n => `<p style="color: white; padding-left: 10px;">🎵 ${n}</p>`).join('')}
+            `;
+        } else {
+            dashboardSunday.innerHTML = '<p style="color: var(--text-muted);">No hay domingo programado.</p>';
+        }
+    }
+
+    // Stats
+    if (statSongs) statSongs.textContent = (state.songs || []).length;
+    if (statPending) statPending.textContent = (state.pending || []).length;
+    if (statMembers) statMembers.textContent = (state.users || []).length;
 }
 
 // --- Render Users List (Líder only) ---

@@ -48,7 +48,11 @@
                 <span class="material-icons-round">temple_hindu</span>
             </div>
             <nav class="nav-menu">
-                <div class="nav-item active" data-tab="repertorio">
+                <div class="nav-item active" data-tab="inicio">
+                    <span class="material-icons-round nav-icon">home</span>
+                    <span class="nav-label">Inicio</span>
+                </div>
+                <div class="nav-item" data-tab="repertorio">
                     <span class="material-icons-round nav-icon">library_music</span>
                     <span class="nav-label">Repertorio</span>
                 </div>
@@ -75,7 +79,7 @@
         <main class="main-content">
             <header class="app-header">
                 <div class="page-title">
-                    <h1 id="pageTitle">Repertorio</h1>
+                    <h1 id="pageTitle">Inicio</h1>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div id="userInfo" style="font-size: 0.9em; color: var(--text-muted);"></div>
@@ -84,8 +88,58 @@
 
             <div class="content-scroll">
 
+                <!-- VISTA: INICIO -->
+                <div id="view-inicio" class="view-section active">
+                    <!-- Header con logo y nombre -->
+                    <div class="glass-card" style="padding: 25px; text-align: center; margin-bottom: 20px;">
+                        <div id="dashboardLogo" style="margin-bottom: 15px;">
+                            <span class="material-icons-round"
+                                style="font-size: 3em; color: var(--primary);">church</span>
+                        </div>
+                        <h1 class="text-glow" style="font-size: 1.8em; margin-bottom: 5px;">Worship Manager</h1>
+                        <p id="dashboardChurchName" style="color: var(--text-muted); font-size: 1.1em;">Mi Iglesia</p>
+                    </div>
+
+                    <!-- Equipo -->
+                    <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <span class="material-icons-round" style="color: var(--primary);">people</span> Equipo
+                        </h3>
+                        <div id="dashboardTeam">
+                            <p style="color: var(--text-muted);">Cargando equipo...</p>
+                        </div>
+                    </div>
+
+                    <!-- Próximo Domingo -->
+                    <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            <span class="material-icons-round" style="color: var(--primary);">event</span> Próximo
+                            Domingo
+                        </h3>
+                        <div id="dashboardSunday">
+                            <p style="color: var(--text-muted);">Sin información del próximo domingo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Resumen rápido -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+                        <div class="glass-card" style="padding: 15px; text-align: center;">
+                            <p style="font-size: 2em; font-weight: 700; color: var(--primary);" id="statSongs">0</p>
+                            <p style="font-size: 0.8em; color: var(--text-muted);">Alabanzas</p>
+                        </div>
+                        <div class="glass-card" style="padding: 15px; text-align: center;">
+                            <p style="font-size: 2em; font-weight: 700; color: #f59e0b;" id="statPending">0</p>
+                            <p style="font-size: 0.8em; color: var(--text-muted);">Propuestas</p>
+                        </div>
+                        <div class="glass-card" style="padding: 15px; text-align: center;">
+                            <p style="font-size: 2em; font-weight: 700; color: #8b5cf6;" id="statMembers">0</p>
+                            <p style="font-size: 0.8em; color: var(--text-muted);">Miembros</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- VISTA: REPERTORIO -->
-                <div id="view-repertorio" class="view-section active">
+                <div id="view-repertorio" class="view-section" style="display: none;">
                     <div class="action-bar" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                         <input type="text" id="searchInput" placeholder="Buscar alabanza..." class="search-input"
                             style="flex: 1; min-width: 200px;">
@@ -185,6 +239,26 @@
                             <p id="configUserEmail" style="color: var(--text-muted);"></p>
                             <p style="margin-top: 8px;">Mi Rol: <span id="configUserRole"
                                     style="color: var(--primary); font-weight: 600;">Invitado</span></p>
+                        </div>
+
+                        <div id="configChurchSection"
+                            style="margin-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; display: none;">
+                            <h3>Iglesia</h3>
+                            <div style="margin-top: 10px;">
+                                <label
+                                    style="display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 0.85em;">Nombre
+                                    de la Iglesia</label>
+                                <input type="text" id="churchNameInput" class="search-input"
+                                    placeholder="Nombre de tu iglesia">
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label
+                                    style="display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 0.85em;">URL
+                                    del Logo</label>
+                                <input type="url" id="churchLogoInput" class="search-input" placeholder="https://...">
+                            </div>
+                            <button id="saveChurchInfoBtn" class="btn-primary" style="margin-top: 10px;">Guardar Info
+                                Iglesia</button>
                         </div>
 
                         <div id="configUsersSection"

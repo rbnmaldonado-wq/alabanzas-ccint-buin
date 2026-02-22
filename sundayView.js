@@ -88,7 +88,7 @@ function renderSelectedSongs() {
                         <span>${song.name}</span>
                         <span style="font-size:0.8em; color:var(--text-muted); border:1px solid #444; padding: 0 4px; border-radius: 4px;">${song.difficulty}</span>
                     </div>
-                    <button class="icon-btn" onclick="window.removeFromSunday(${index})" style="color: #ef4444;">
+                    <button class="icon-btn role-edit-only" onclick="window.removeFromSunday(${index})" style="color: #ef4444;">
                         <span class="material-icons-round">remove_circle_outline</span>
                     </button>
                 </div>
@@ -104,7 +104,7 @@ function renderSelector() {
         const wrapper = document.createElement('div');
         wrapper.style.marginTop = '20px';
         wrapper.innerHTML = `
-            <div style="display: flex; gap: 10px;">
+            <div class="role-edit-only" style="display: flex; gap: 10px;">
                 <select id="sundaySongAddSelect" class="search-input" style="flex:1;">
                     <option value="">+ Agregar alabanza...</option>
                 </select>

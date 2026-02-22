@@ -92,9 +92,9 @@
                 <div id="view-inicio" class="view-section active">
                     <!-- Header con logo y nombre -->
                     <div class="glass-card" style="padding: 25px; text-align: center; margin-bottom: 20px;">
-                        <div id="dashboardLogo" style="margin-bottom: 15px;">
+                        <div id="dashboardLogo" style="margin-bottom: 20px;">
                             <span class="material-icons-round"
-                                style="font-size: 3em; color: var(--primary);">church</span>
+                                style="font-size: 4.5em; color: var(--primary); opacity: 0.5;">church</span>
                         </div>
                         <h1 class="text-glow" style="font-size: 1.8em; margin-bottom: 5px;">Worship Manager</h1>
                         <p id="dashboardChurchName" style="color: var(--text-muted); font-size: 1.1em;">Mi Iglesia</p>
@@ -253,9 +253,20 @@
                             </div>
                             <div style="margin-top: 10px;">
                                 <label
-                                    style="display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 0.85em;">URL
-                                    del Logo</label>
-                                <input type="url" id="churchLogoInput" class="search-input" placeholder="https://...">
+                                    style="display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 0.85em;">Logo
+                                    de la Iglesia</label>
+                                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                    <label class="btn-primary"
+                                        style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span class="material-icons-round" style="font-size: 1.1em;">upload</span> Subir
+                                        Imagen
+                                        <input type="file" id="churchLogoFile" accept="image/*" style="display: none;">
+                                    </label>
+                                    <div id="logoPreview"
+                                        style="width: 50px; height: 50px; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
+                                        <span class="material-icons-round" style="color: #475569;">image</span>
+                                    </div>
+                                </div>
                             </div>
                             <button id="saveChurchInfoBtn" class="btn-primary" style="margin-top: 10px;">Guardar Info
                                 Iglesia</button>

@@ -48,8 +48,10 @@ const statMembers = document.getElementById('statMembers');
 // Church config elements
 const configChurchSection = document.getElementById('configChurchSection');
 const churchNameInput = document.getElementById('churchNameInput');
-const churchLogoInput = document.getElementById('churchLogoInput');
+const churchLogoFile = document.getElementById('churchLogoFile');
+const logoPreview = document.getElementById('logoPreview');
 const saveChurchInfoBtn = document.getElementById('saveChurchInfoBtn');
+let pendingLogoBase64 = null;
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
@@ -84,14 +86,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 5. Church info save
+    if (churchLogoFile) {
+        churchLogoFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            compressImage(file, 300, 0.7, (base64) => {
+                pendingLogoBase64 = base64;
+                if (logoPreview) {
+                    logoPreview.innerHTML = `<img src="${base64}" style="width:100%;height:100%;object-fit:cover;">`;
+                }
+            });
+        });
+    }
     if (saveChurchInfoBtn) {
         saveChurchInfoBtn.addEventListener('click', async () => {
             const name = churchNameInput ? churchNameInput.value.trim() : '';
-            const logo = churchLogoInput ? churchLogoInput.value.trim() : '';
             if (name) state.church.config.churchName = name;
-            state.church.config.logoUrl = logo;
+            if (pendingLogoBase64) {
+                localStorage.setItem('worship_church_logo', pendingLogoBase64);
+                pendingLogoBase64 = null;
+            }
             localStorage.setItem('worship_church_name', name);
-            localStorage.setItem('worship_church_logo', logo);
             renderDashboard();
             alert('Información de iglesia guardada.');
         });
@@ -275,24 +290,28 @@ function renderDashboard() {
     const churchName = state.church.config?.churchName
         || localStorage.getItem('worship_church_name')
         || 'Mi Iglesia';
-    const logoUrl = state.church.config?.logoUrl
-        || localStorage.getItem('worship_church_logo')
-        || '';
+    const logoData = localStorage.getItem('worship_church_logo') || '';
 
     if (dashboardChurchName) dashboardChurchName.textContent = churchName;
 
-    // Logo
+    // Logo — big and prominent
     if (dashboardLogo) {
-        if (logoUrl) {
-            dashboardLogo.innerHTML = `<img src="${logoUrl}" alt="Logo" style="max-height: 80px; max-width: 200px; border-radius: 12px;">`;
+        if (logoData) {
+            dashboardLogo.innerHTML = `
+                <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; overflow: hidden;
+                            border: 3px solid var(--primary); box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);">
+                    <img src="${logoData}" alt="Logo" style="width:100%; height:100%; object-fit:cover;">
+                </div>`;
         } else {
-            dashboardLogo.innerHTML = '<span class="material-icons-round" style="font-size: 3em; color: var(--primary);">church</span>';
+            dashboardLogo.innerHTML = '<span class="material-icons-round" style="font-size: 4.5em; color: var(--primary); opacity: 0.5;">church</span>';
         }
     }
 
     // Church config inputs
     if (churchNameInput) churchNameInput.value = churchName !== 'Mi Iglesia' ? churchName : '';
-    if (churchLogoInput) churchLogoInput.value = logoUrl;
+    if (logoPreview && logoData) {
+        logoPreview.innerHTML = `<img src="${logoData}" style="width:100%;height:100%;object-fit:cover;">`;
+    }
 
     // Team
     if (dashboardTeam) {
@@ -429,4 +448,27 @@ async function handleAuthChange() {
         if (authStatusText) authStatusText.textContent = 'Bienvenido. Inicia sesión para continuar.';
         if (manualAuthTrigger) manualAuthTrigger.style.display = 'block';
     }
+}
+
+// --- Image Compression Utility ---
+function compressImage(file, maxSize, quality, callback) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height;
+            if (w > h) {
+                if (w > maxSize) { h = h * maxSize / w; w = maxSize; }
+            } else {
+                if (h > maxSize) { w = w * maxSize / h; h = maxSize; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }

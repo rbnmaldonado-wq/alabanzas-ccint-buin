@@ -194,34 +194,42 @@ function initNavigation() {
 
 // --- Resolve User Role from Server Data ---
 async function resolveUserRole() {
-    if (!authState.userEmail || !state.users || state.users.length === 0) {
+    if (!authState.userEmail) {
         actions.setUserRole('invitado');
         applyRolePermissions('invitado');
         return;
     }
+
+    // Init users array if needed
+    if (!state.users) state.users = [];
 
     const currentUser = state.users.find(u =>
         u.email && u.email.toLowerCase() === authState.userEmail.toLowerCase()
     );
 
     if (currentUser) {
+        // User already registered — use their role
         const role = currentUser.role || 'invitado';
         actions.setUserRole(role);
         applyRolePermissions(role);
     } else {
+        // New user — first user becomes Líder, others become Invitado
+        const isFirstUser = state.users.length === 0;
+        const role = isFirstUser ? 'lider' : 'invitado';
         const newUser = {
             email: authState.userEmail,
             name: authState.userName || authState.userEmail.split('@')[0],
-            role: 'invitado',
+            role: role,
             joinedDate: new Date().toISOString()
         };
         try {
             await api.addUser(newUser);
+            console.log(`Usuario registrado como ${role}:`, authState.userEmail);
         } catch (e) {
             console.warn('Error registrando usuario nuevo:', e);
         }
-        actions.setUserRole('invitado');
-        applyRolePermissions('invitado');
+        actions.setUserRole(role);
+        applyRolePermissions(role);
     }
 }
 

@@ -85,16 +85,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. Church info save
+    // 5. Church logo — save immediately on file select
     if (churchLogoFile) {
         churchLogoFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             compressImage(file, 300, 0.7, (base64) => {
-                pendingLogoBase64 = base64;
+                localStorage.setItem('worship_church_logo', base64);
                 if (logoPreview) {
                     logoPreview.innerHTML = `<img src="${base64}" style="width:100%;height:100%;object-fit:cover;">`;
                 }
+                renderDashboard();
+                alert('✅ Logo guardado correctamente.');
             });
         });
     }

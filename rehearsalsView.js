@@ -120,12 +120,16 @@ function renderRehearsalItem(r, isPast = false) {
         return s ? s.name : 'Unknown';
     });
 
+    const parts = r.date.split('-');
+    const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+    const formattedDate = dateObj.toLocaleDateString();
+
     return `
         <div class="glass-card" style="padding: 15px; border-left: 4px solid ${isPast ? '#64748b' : '#22c55e'};">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <strong style="font-size: 1.1em; color: white;">
-                        ${new Date(r.date).toLocaleDateString()}
+                        ${formattedDate}
                     </strong>
                     <span style="color: var(--primary); margin-left: 10px;">⏰ ${r.time}</span>
                 </div>

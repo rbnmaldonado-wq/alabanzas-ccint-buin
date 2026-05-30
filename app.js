@@ -15,6 +15,12 @@ const userInfoDisplay = document.getElementById('userInfo');
 const logoutBtn = document.getElementById('logoutBtn');
 const pageTitle = document.getElementById('pageTitle');
 
+// Database Setup elements
+const dbSetupContainer = document.getElementById('dbSetupContainer');
+const createDbBtn = document.getElementById('createDbBtn');
+const setupSheetIdInput = document.getElementById('setupSheetIdInput');
+const linkDbBtn = document.getElementById('linkDbBtn');
+
 // Configuración elements
 const sheetIdInput = document.getElementById('sheetIdInput');
 const saveSheetIdBtn = document.getElementById('saveSheetIdBtn');
@@ -61,6 +67,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. Listeners UI Globales
     if (manualLoginBtn) manualLoginBtn.addEventListener('click', login);
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+    // Asistente de Configuración de Base de Datos
+    if (createDbBtn) {
+        createDbBtn.addEventListener('click', async () => {
+            try {
+                createDbBtn.disabled = true;
+                createDbBtn.textContent = 'Creando...';
+                const newId = await api.createSheet();
+                alert('✅ Base de datos creada con éxito en Google Drive.');
+                await api.loadAll();
+                await handleAuthChange();
+            } catch (e) {
+                console.error('Error creando base de datos:', e);
+                alert('Error al crear la base de datos. Asegúrate de tener permisos suficientes.');
+                createDbBtn.disabled = false;
+                createDbBtn.innerHTML = '<span class="material-icons-round" style="font-size: 1.2em;">add_to_drive</span> Crear Nueva Base de Datos';
+            }
+        });
+    }
+
+    if (linkDbBtn) {
+        linkDbBtn.addEventListener('click', async () => {
+            const newId = setupSheetIdInput.value.trim();
+            if (!newId) {
+                alert('Por favor ingresa un ID de Google Sheet válido.');
+                return;
+            }
+            try {
+                linkDbBtn.disabled = true;
+                linkDbBtn.textContent = 'Vinculando...';
+                actions.setChurchId(newId);
+                await api.loadAll();
+                alert('✅ Base de datos vinculada con éxito.');
+                await handleAuthChange();
+            } catch (e) {
+                console.error('Error vinculando base de datos:', e);
+                alert('Error al vincular. Verifica que el ID sea correcto y tengas permisos de acceso.');
+                linkDbBtn.disabled = false;
+                linkDbBtn.textContent = 'Vincular Base de Datos';
+            }
+        });
+    }
 
     // 3. Navegación entre tabs
     initNavigation();
@@ -437,24 +485,30 @@ function renderUsersList() {
 // --- Auth Change Handler ---
 async function handleAuthChange() {
     if (authState.isAuthenticated) {
-        if (authOverlay) authOverlay.style.display = 'none';
-        if (appContainer) appContainer.style.display = 'flex';
         if (userInfoDisplay) userInfoDisplay.textContent = authState.userEmail;
-
         if (configUserEmail) configUserEmail.textContent = authState.userEmail || '';
         if (sheetIdInput) sheetIdInput.value = state.church.id || '';
 
         if (state.church.id) {
+            if (authOverlay) authOverlay.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'flex';
+            if (dbSetupContainer) dbSetupContainer.style.display = 'none';
             console.log('Cargando datos de iglesia:', state.church.id);
             await api.loadAll();
         } else {
             console.log('Usuario autenticado pero sin iglesia seleccionada.');
+            if (authOverlay) authOverlay.style.display = 'flex';
+            if (appContainer) appContainer.style.display = 'none';
+            if (manualAuthTrigger) manualAuthTrigger.style.display = 'none';
+            if (authStatusText) authStatusText.textContent = '¡Bienvenido! Configura tu base de datos.';
+            if (dbSetupContainer) dbSetupContainer.style.display = 'block';
             applyRolePermissions('invitado');
         }
 
     } else {
         if (authOverlay) authOverlay.style.display = 'flex';
         if (appContainer) appContainer.style.display = 'none';
+        if (dbSetupContainer) dbSetupContainer.style.display = 'none';
         if (authStatusText) authStatusText.textContent = 'Bienvenido. Inicia sesión para continuar.';
         if (manualAuthTrigger) manualAuthTrigger.style.display = 'block';
     }

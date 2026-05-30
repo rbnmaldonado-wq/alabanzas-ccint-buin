@@ -65,14 +65,14 @@ export const api = {
         // Persistir (Reescribir todo por simplicidad y atomicidad en V1/V2 legacy way)
         // Idealmente sería append, pero mantenemos lógica original por ahora.
         const values = state.songs.map(s => [
-            s.id, s.name, s.difficulty, s.youtubeLink, s.pdfLink, s.addedDate
+            s.id, s.name, s.difficulty, s.youtubeLink, s.docLink, s.addedDate
         ]);
         await this.saveSongs();
     },
 
     async saveSongs() {
         const values = state.songs.map(s => [
-            s.id, s.name, s.difficulty, s.youtubeLink, s.pdfLink, s.addedDate
+            s.id, s.name, s.difficulty, s.youtubeLink, s.docLink, s.addedDate
         ]);
         // Sobrescribir todo el rango (Song!A2:F)
         // Nota: Esto borra filas extra si hay menos canciones que antes
@@ -198,7 +198,19 @@ async function readSheet(range) {
     }
 }
 
+async function clearSheet(range) {
+    try {
+        await gapi.client.sheets.spreadsheets.values.clear({
+            spreadsheetId: state.church.id,
+            range: range
+        });
+    } catch (e) {
+        console.warn(`Error limpiando rango ${range}:`, e);
+    }
+}
+
 async function writeSheet(range, values) {
+    await clearSheet(range);
     await gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId: state.church.id,
         range: range,
@@ -214,7 +226,7 @@ function mapSongs(rows) {
         name: r[1],
         difficulty: r[2],
         youtubeLink: r[3],
-        pdfLink: r[4],
+        docLink: r[4],
         addedDate: r[5]
     })).filter(s => s.id); // Filtrar filas vacías
 }

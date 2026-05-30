@@ -13,6 +13,7 @@ export function initSongsUI() {
         form: document.getElementById('songForm'),
         closeModalBtn: document.getElementById('closeSongModal'),
         cancelModalBtn: document.getElementById('cancelSongModalBtn'),
+        deleteBtn: document.getElementById('deleteSongModalBtn'),
         // Form inputs
         nameInput: document.getElementById('modalSongName'),
         difficultyInput: document.getElementById('modalSongDifficulty'),
@@ -31,6 +32,7 @@ export function initSongsUI() {
 
     if (elements.closeModalBtn) elements.closeModalBtn.addEventListener('click', closeModal);
     if (elements.cancelModalBtn) elements.cancelModalBtn.addEventListener('click', closeModal);
+    if (elements.deleteBtn) elements.deleteBtn.addEventListener('click', handleDeleteSong);
 
     if (elements.form) {
         elements.form.addEventListener('submit', handleFormSubmit);
@@ -158,6 +160,11 @@ function openModal(song = null) {
     elements.youtubeInput.value = song ? song.youtubeLink : '';
     elements.docInput.value = song ? (song.docLink || '') : '';
 
+    // Mostrar/ocultar botón Eliminar
+    if (elements.deleteBtn) {
+        elements.deleteBtn.style.display = song ? 'block' : 'none';
+    }
+
     // Mostrar
     elements.modal.style.display = 'flex';
     elements.nameInput.focus();
@@ -166,6 +173,7 @@ function openModal(song = null) {
 function closeModal() {
     elements.modal.style.display = 'none';
     elements.form.reset();
+    if (elements.deleteBtn) elements.deleteBtn.style.display = 'none';
     editingSongId = null;
 }
 
@@ -217,3 +225,29 @@ window.editSong = (id) => {
     const song = state.songs.find(s => s.id === id);
     if (song) openModal(song);
 };
+
+async function handleDeleteSong() {
+    if (!editingSongId) return;
+
+    const song = state.songs.find(s => s.id === editingSongId);
+    if (!song) return;
+
+    if (!confirm(`¿Estás seguro de que deseas eliminar la alabanza "${song.name}"?`)) {
+        return;
+    }
+
+    try {
+        closeModal();
+
+        // Remover de la lista local
+        const index = state.songs.findIndex(s => s.id === editingSongId);
+        if (index !== -1) {
+            state.songs.splice(index, 1);
+            await api.saveSongs(); // Guardar en Sheets
+            alert('✅ Alabanza eliminada.');
+        }
+    } catch (err) {
+        console.error("Error deleting song:", err);
+        alert("Error al eliminar la alabanza.");
+    }
+}

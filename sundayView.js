@@ -28,7 +28,9 @@ export function initSundayUI() {
 
     // Subscribe to events
     import('./store.js').then(({ subscribe }) => {
-        subscribe('data-loaded', renderSundayUI);
+        subscribe('data-loaded', () => {
+            updateCurrentSundayState();
+        });
         subscribe('data-updated', renderSundayUI); // Re-render if songs change (names, etc)
     });
 }
@@ -42,8 +44,13 @@ function getNextSunday() {
 
 function updateCurrentSundayState() {
     state.ui.sundayDate = elements.dateInput.value;
-    // Check if this date already exists in history to load it?
-    // For now, simple logic: current editing buffer.
+    // Cargar canciones si ya existe un domingo programado para esta fecha
+    const existing = state.sundays.find(s => s.date === state.ui.sundayDate);
+    if (existing) {
+        state.ui.sundaySongs = [...existing.songs];
+    } else {
+        state.ui.sundaySongs = [];
+    }
     renderSundayUI();
 }
 

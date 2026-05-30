@@ -34,6 +34,25 @@
                     Iniciar Sesión con Google
                 </button>
             </div>
+
+            <!-- Asistente de base de datos inicial para nuevos usuarios -->
+            <div id="dbSetupContainer" style="display: none; margin-top: 20px; text-align: left; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <p style="color: #99f6e4; margin-bottom: 15px; font-size: 0.9em; text-align: center;">
+                    ¡Sesión iniciada! Para continuar, necesitas crear una nueva base de datos o vincular una existente.
+                </p>
+                <button id="createDbBtn" class="btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px;">
+                    <span class="material-icons-round" style="font-size: 1.2em;">add_to_drive</span>
+                    Crear Nueva Base de Datos
+                </button>
+                <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8em; margin-bottom: 15px;">— O VINCULAR EXISTENTE —</div>
+                <div style="margin-bottom: 12px;">
+                    <label style="display: block; color: var(--text-muted); margin-bottom: 6px; font-size: 0.8em;">ID de Google Sheet</label>
+                    <input type="text" id="setupSheetIdInput" class="search-input" placeholder="Ingresa el ID de la hoja..." style="font-size: 0.85em; padding: 10px 12px; font-family: monospace;">
+                </div>
+                <button id="linkDbBtn" class="btn-primary" style="width: 100%; background: transparent; border: 1px solid var(--primary); color: var(--primary);">
+                    Vincular Base de Datos
+                </button>
+            </div>
         </div>
     </div>
 
@@ -339,10 +358,15 @@
                     <input type="url" id="modalSongDoc" class="search-input" placeholder="https://drive.google.com/...">
                 </div>
 
-                <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" id="cancelSongModalBtn" class="btn-danger"
-                        style="background: transparent; border: 1px solid #ef4444;">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
+                <div style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="deleteSongModalBtn" class="btn-danger" style="display: none; background: #ef4444; border: none; color: white;">
+                        Eliminar
+                    </button>
+                    <div style="display: flex; gap: 10px; margin-left: auto;">
+                        <button type="button" id="cancelSongModalBtn" class="btn-danger"
+                            style="background: transparent; border: 1px solid #ef4444;">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
                 </div>
             </form>
         </div>
